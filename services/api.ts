@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { type AxiosProgressEvent } from 'axios';
 
 const api = axios.create({
   baseURL: '/api',
@@ -29,14 +29,14 @@ api.interceptors.response.use(
 );
 
 export const testAPI = {
-  createTest: (formData: FormData, onUploadProgress?: (e: ProgressEvent) => void) =>
+  createTest: (formData: FormData, onUploadProgress?: (e: AxiosProgressEvent) => void) =>
     api.post('/tests', formData, { headers: { 'Content-Type': 'multipart/form-data' }, onUploadProgress }),
-  saveDraft: (formData: FormData, onUploadProgress?: (e: ProgressEvent) => void) =>
+  saveDraft: (formData: FormData, onUploadProgress?: (e: AxiosProgressEvent) => void) =>
     api.post('/tests', formData, { headers: { 'Content-Type': 'multipart/form-data' }, onUploadProgress }),
   getAllTests: () => api.get('/tests'),
   getLiveTests: () => api.get('/tests/live'),
   getTestById: (id: string) => api.get(`/tests/${id}`),
-  updateTest: (id: string, formData: FormData, onUploadProgress?: (e: ProgressEvent) => void) =>
+  updateTest: (id: string, formData: FormData, onUploadProgress?: (e: AxiosProgressEvent) => void) =>
     api.put(`/tests/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' }, onUploadProgress }),
   toggleTestLive: (id: string, isLive: boolean) => api.patch(`/tests/${id}/toggle-live`, { isLive }),
   deleteTest: (id: string) => api.delete(`/tests/${id}`),

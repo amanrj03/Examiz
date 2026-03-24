@@ -1,26 +1,189 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --primary: 174 72% 40%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 174 72% 56%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 16 85% 57%;
+    --accent-foreground: 0 0% 100%;
+    --success: 152 69% 41%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 152 69% 95%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --warning-light: 38 92% 95%;
+    --error: 0 72% 51%;
+    --error-foreground: 0 0% 100%;
+    --error-light: 0 72% 95%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+    --info-light: 217 91% 95%;
+    --purple: 262 83% 58%;
+    --purple-foreground: 0 0% 100%;
+    --purple-light: 262 83% 95%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 174 72% 40%;
+    --radius: 0.75rem;
+    --gradient-hero: linear-gradient(135deg, hsl(174 72% 40%) 0%, hsl(199 89% 48%) 50%, hsl(262 83% 58%) 100%);
+    --shadow-hover: 0 12px 40px -8px hsl(174 72% 40% / 0.25);
+    --shadow-glow: 0 0 40px hsl(174 72% 56% / 0.3);
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .glass {
+    background-color: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(24px);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+  .gradient-text {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-image: var(--gradient-hero);
+  }
+  .card-hover {
+    transition-property: all;
+    transition-duration: 300ms;
+    transition-timing-function: ease-out;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+  }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
 }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+.submit-modal-scroll::-webkit-scrollbar { width: 6px; }
+.submit-modal-scroll::-webkit-scrollbar-track { background: #f7fafc; border-radius: 3px; }
+.submit-modal-scroll::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 3px; }
+
+/* Question palette */
+.question-number {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-width: 2px;
+  border-style: solid;
+  cursor: pointer;
+  transition-property: color, background-color, border-color;
+  transition-duration: 150ms;
+  border-radius: 0.25rem;
+}
+.question-not-visited { background-color: #f3f4f6; border-color: #d1d5db; color: #374151; }
+.question-not-answered { background-color: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+.question-answered { background-color: #dcfce7; border-color: #22c55e; color: #15803d; }
+.question-marked-review { background-color: #fef3c7; border-color: #eab308; color: #a16207; }
+.question-answered-and-marked {
+  border-width: 2px;
+  border-style: solid;
+  border-color: #22c55e;
+  color: #000;
+  font-weight: 700;
+  background: linear-gradient(135deg, #dcfce7 50%, #fef3c7 50%);
+}
+.question-current { background-color: #dbeafe; border-color: #3b82f6; color: #1d4ed8; outline: 2px solid #3b82f6; outline-offset: 0; }
+.question-not-visited.question-current,
+.question-not-answered.question-current,
+.question-answered.question-current,
+.question-marked-review.question-current {
+  background-color: #dbeafe; border-color: #3b82f6; color: #1d4ed8; outline: 2px solid #3b82f6; outline-offset: 0;
+}
+
+/* Keypad */
+.virtual-keypad { background-color: #f9fafb; padding: 1rem; border-radius: 0.5rem; border: 2px solid #d1d5db; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); max-width: 280px; }
+.keypad-container { display: flex; flex-direction: column; gap: 0.25rem; }
+.keypad-row { display: flex; justify-content: center; gap: 0.25rem; }
+.keypad-key {
+  width: 4rem;
+  height: 3rem;
+  background-color: #fff;
+  border: 2px solid #9ca3af;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: all 150ms;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+.keypad-key:hover { background-color: #f3f4f6; transform: translateY(-1px); }
+.keypad-key:active { background-color: #e5e7eb; transform: translateY(0); }
+.keypad-special { background-color: #eff6ff; border-color: #60a5fa; color: #1d4ed8; }
+.keypad-special:hover { background-color: #dbeafe; }
+.keypad-backspace { background-color: #fff7ed; border-color: #fb923c; color: #c2410c; }
+.keypad-backspace:hover { background-color: #ffedd5; }
+.keypad-clear { background-color: #fef2f2; border-color: #f87171; color: #b91c1c; width: 100%; }
+.keypad-clear:hover { background-color: #fee2e2; }
+
+/* Section slider */
+#section-slider::-webkit-scrollbar { height: 6px; }
+#section-slider::-webkit-scrollbar-track { background: #e5e7eb; border-radius: 3px; }
+#section-slider::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 3px; }
+#section-slider { scrollbar-width: thin; scrollbar-color: #9ca3af #e5e7eb; }
+
+/* CSS variable utility classes */
+.bg-background { background-color: hsl(var(--background)); }
+.text-foreground { color: hsl(var(--foreground)); }
+.bg-card { background-color: hsl(var(--card)); }
+.bg-primary { background-color: hsl(var(--primary)); }
+.text-primary { color: hsl(var(--primary)); }
+.text-primary-foreground { color: hsl(var(--primary-foreground)); }
+.text-muted-foreground { color: hsl(var(--muted-foreground)); }
+.border-border { border-color: hsl(var(--border)); }
+.text-success { color: hsl(var(--success)); }
+.text-error { color: hsl(var(--error)); }
+.text-warning { color: hsl(var(--warning)); }
+.text-info { color: hsl(var(--info)); }
+.text-purple { color: hsl(var(--purple)); }
+.bg-success-light { background-color: hsl(var(--success-light)); }
+.bg-error-light { background-color: hsl(var(--error-light)); }
+.bg-warning-light { background-color: hsl(var(--warning-light)); }
+.bg-info-light { background-color: hsl(var(--info-light)); }
+.bg-purple-light { background-color: hsl(var(--purple-light)); }
+.border-success { border-color: hsl(var(--success)); }
+.border-error { border-color: hsl(var(--error)); }
+.border-warning { border-color: hsl(var(--warning)); }
+.border-info { border-color: hsl(var(--info)); }
+.border-border\/50 { border-color: hsl(var(--border) / 0.5); }
+.bg-primary\/5 { background-color: hsl(var(--primary) / 0.05); }
+.bg-primary\/10 { background-color: hsl(var(--primary) / 0.1); }
+.bg-card\/80 { background-color: hsl(var(--card) / 0.8); }
+.bg-secondary\/50 { background-color: hsl(var(--secondary) / 0.5); }
+.bg-warning\/10 { background-color: hsl(var(--warning) / 0.1); }
+.bg-info\/10 { background-color: hsl(var(--info) / 0.1); }
+.bg-purple\/10 { background-color: hsl(var(--purple) / 0.1); }
+.text-foreground\/80 { color: hsl(var(--foreground) / 0.8); }

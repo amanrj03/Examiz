@@ -168,6 +168,26 @@ export default function TestCreator() {
     input.click();
   };
 
+  const handleBulkAllSections = (field: 'questionImage' | 'solutionImage') => {
+    const totalQuestions = sections.reduce((sum, s) => sum + s.questions.length, 0);
+    if (totalQuestions === 0) { setModal({ show: true, title: 'No Questions', message: 'Add questions to sections first before bulk uploading.', type: 'warning' }); return; }
+    const input = document.createElement('input'); input.type = 'file'; input.multiple = true; input.accept = 'image/*';
+    input.onchange = (e) => {
+      const files = Array.from((e.target as HTMLInputElement).files || []);
+      const err = validateBulkSelection(files, totalQuestions);
+      if (err) { setBulkErrorModal({ show: true, error: err }); return; }
+      const s = sections.map((sec) => ({ ...sec, questions: sec.questions.map((q) => ({ ...q })) }));
+      let fileIdx = 0;
+      for (let si = 0; si < s.length; si++) {
+        for (let qi = 0; qi < s[si].questions.length; qi++) {
+          (s[si].questions[qi] as any)[field] = files[fileIdx++];
+        }
+      }
+      setSections(s);
+    };
+    input.click();
+  };
+
   const buildFormData = (isDraft: boolean) => {
     const fd = new FormData();
     fd.append('name', testName);
@@ -382,7 +402,13 @@ export default function TestCreator() {
             <div className="mb-4">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-800">Test Sections</h3>
-                <button onClick={addSection} className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 text-sm flex items-center gap-2">+ Add Section</button>
+                <div className="flex gap-2 flex-wrap justify-end">
+                  {sections.some((s) => s.questions.length > 0) && (<>
+                    <button onClick={() => handleBulkAllSections('questionImage')} className="bg-indigo-500 text-white px-3 py-2 rounded-lg hover:bg-indigo-600 text-xs font-medium">📁 Bulk All Questions</button>
+                    <button onClick={() => handleBulkAllSections('solutionImage')} className="bg-cyan-600 text-white px-3 py-2 rounded-lg hover:bg-cyan-700 text-xs font-medium">📁 Bulk All Solutions</button>
+                  </>)}
+                  <button onClick={addSection} className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 text-sm flex items-center gap-2">+ Add Section</button>
+                </div>
               </div>
 
               {sections.map((section, si) => (

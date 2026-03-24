@@ -55,9 +55,8 @@ export async function POST(req: NextRequest) {
         name: name as string,
         duration: parseInt(duration as string),
         totalMarks,
-        isDraft: isDraft === 'true' || isDraft === true,
-        enableGraphicalAnalysis:
-          enableGraphicalAnalysis === 'true' || enableGraphicalAnalysis === true,
+        isDraft: isDraft === 'true',
+        enableGraphicalAnalysis: enableGraphicalAnalysis === 'true',
         sections: {
           create: await Promise.all(
             parsedSections.map(

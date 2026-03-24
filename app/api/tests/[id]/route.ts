@@ -83,9 +83,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             name: name as string,
             duration: parseInt(duration as string),
             totalMarks,
-            isDraft: isDraft === 'true' || isDraft === true,
-            enableGraphicalAnalysis:
-              enableGraphicalAnalysis === 'true' || enableGraphicalAnalysis === true,
+            isDraft: isDraft === 'true',
+            enableGraphicalAnalysis: enableGraphicalAnalysis === 'true',
           },
         });
 
@@ -140,20 +139,22 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
             const qFile = getFile(`sections[${si}].questions[${qi}].questionImage`);
             if (qFile) {
-              questionImageUrl = await uploadToCloudinary(qFile.filepath, 'questionImage');
-              newImageUrls.add(questionImageUrl);
+              const uploaded = await uploadToCloudinary(qFile.filepath, 'questionImage');
+              questionImageUrl = uploaded;
+              newImageUrls.add(uploaded);
             } else if (isExistingCloudinaryUrl(newQuestion.questionImage)) {
               questionImageUrl = newQuestion.questionImage;
-              newImageUrls.add(questionImageUrl);
+              newImageUrls.add(newQuestion.questionImage as string);
             }
 
             const sFile = getFile(`sections[${si}].questions[${qi}].solutionImage`);
             if (sFile) {
-              solutionImageUrl = await uploadToCloudinary(sFile.filepath, 'solutionImage');
-              newImageUrls.add(solutionImageUrl);
+              const uploaded = await uploadToCloudinary(sFile.filepath, 'solutionImage');
+              solutionImageUrl = uploaded;
+              newImageUrls.add(uploaded);
             } else if (isExistingCloudinaryUrl(newQuestion.solutionImage)) {
               solutionImageUrl = newQuestion.solutionImage;
-              newImageUrls.add(solutionImageUrl);
+              newImageUrls.add(newQuestion.solutionImage as string);
             }
 
             const questionData = {

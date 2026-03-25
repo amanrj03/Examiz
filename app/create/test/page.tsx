@@ -188,18 +188,38 @@ export default function TestCreator() {
     input.click();
   };
 
-  const buildFormData = (isDraft: boolean) => {
+  // Upload all File objects one-by-one to /api/upload/image, replace with URLs in sections state
+  const uploadImagesQueue = async (currentSections: Section[]): Promise<Section[]> => {
+    const result = currentSections.map((s) => ({ ...s, questions: s.questions.map((q) => ({ ...q })) }));
+    const queue: { si: number; qi: number; field: 'questionImage' | 'solutionImage'; file: File }[] = [];
+    result.forEach((s, si) => s.questions.forEach((q, qi) => {
+      if (q.questionImage instanceof File) queue.push({ si, qi, field: 'questionImage', file: q.questionImage });
+      if (q.solutionImage instanceof File) queue.push({ si, qi, field: 'solutionImage', file: q.solutionImage });
+    }));
+    let done = 0;
+    for (const item of queue) {
+      const fd = new FormData();
+      fd.append('image', item.file);
+      fd.append('imageType', item.field === 'questionImage' ? 'question' : 'solution');
+      const res = await fetch('/api/upload/image', { method: 'POST', body: fd });
+      if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || 'Image upload failed'); }
+      const { url } = await res.json();
+      (result[item.si].questions[item.qi] as any)[item.field] = url;
+      done++;
+      setUploadProgress(Math.round((done / queue.length) * 100));
+    }
+    if (queue.length > 0) setSections(result);
+    return result;
+  };
+
+  const buildFormData = (isDraft: boolean, resolvedSections: Section[]) => {
     const fd = new FormData();
     fd.append('name', testName);
     fd.append('duration', String(duration.hours * 60 + duration.minutes));
     fd.append('isDraft', String(isDraft));
     fd.append('enableGraphicalAnalysis', String(enableGraphicalAnalysis));
-    const cleanSections = sections.map((s) => ({ name: s.name, questionType: s.questionType, marks: s.marks ?? 4, negativeMarks: s.negativeMarks ?? -1, questions: s.questions.map(({ id, ...q }) => ({ ...q, correctOptions: q.correctOptions || null, questionImage: typeof q.questionImage === 'string' ? q.questionImage : null, solutionImage: typeof q.solutionImage === 'string' ? q.solutionImage : null })) }));
+    const cleanSections = resolvedSections.map((s) => ({ name: s.name, questionType: s.questionType, marks: s.marks ?? 4, negativeMarks: s.negativeMarks ?? -1, questions: s.questions.map(({ id, ...q }) => ({ ...q, correctOptions: q.correctOptions || null, questionImage: typeof q.questionImage === 'string' ? q.questionImage : null, solutionImage: typeof q.solutionImage === 'string' ? q.solutionImage : null })) }));
     fd.append('sections', JSON.stringify(cleanSections));
-    sections.forEach((s, si) => s.questions.forEach((q, qi) => {
-      if (q.questionImage instanceof File) fd.append(`sections[${si}].questions[${qi}].questionImage`, q.questionImage);
-      if (q.solutionImage instanceof File) fd.append(`sections[${si}].questions[${qi}].solutionImage`, q.solutionImage);
-    }));
     return fd;
   };
 
@@ -209,7 +229,8 @@ export default function TestCreator() {
     if (!testName.trim()) { setModal({ show: true, title: 'Validation Error', message: 'Please enter test name', type: 'warning' }); return; }
     setSaveDraftLoading(true); setLoading(true);
     try {
-      const fd = buildFormData(true);
+      const resolvedSections = await uploadImagesQueue(sections);
+      const fd = buildFormData(true, resolvedSections);
       if (editingTest) {
         const res = await testAPI.updateTest(editingTest.id, fd, onProgress);
         setModal({ show: true, title: 'Success', message: 'Draft saved successfully!', type: 'success' });
@@ -219,7 +240,7 @@ export default function TestCreator() {
           setSections(t.sections.map((s: any) => ({ name: s.name, questionType: s.questionType, marks: s.questions[0]?.marks ?? 4, negativeMarks: s.questions[0]?.negativeMarks ?? -1, isExpanded: false, questions: s.questions.map((q: any, i: number) => ({ id: q.id || `q-${Date.now()}-${i}`, questionImage: q.questionImage, solutionImage: q.solutionImage, correctOption: q.correctOption, correctOptions: q.correctOptions ? (typeof q.correctOptions === 'string' ? q.correctOptions.split(',') : q.correctOptions) : [], correctInteger: q.correctInteger?.toString() || '' })) })));
         }
       } else { await testAPI.saveDraft(fd, onProgress); setModal({ show: true, title: 'Success', message: 'Draft saved successfully!', type: 'success' }); resetForm(); fetchTests(); }
-    } catch (error: any) { setModal({ show: true, title: 'Error', message: error.userMessage || 'Failed to save draft.', type: 'error' }); }
+    } catch (error: any) { setModal({ show: true, title: 'Error', message: error.userMessage || error.message || 'Failed to save draft.', type: 'error' }); }
     finally { setSaveDraftLoading(false); setLoading(false); setUploadProgress(0); }
   };
 
@@ -239,11 +260,12 @@ export default function TestCreator() {
     }
     setCreateTestLoading(true); setLoading(true);
     try {
-      const fd = buildFormData(false);
+      const resolvedSections = await uploadImagesQueue(sections);
+      const fd = buildFormData(false, resolvedSections);
       if (editingTest) { await testAPI.updateTest(editingTest.id, fd, onProgress); setModal({ show: true, title: 'Success', message: editMode === 'continue' ? 'Test created successfully!' : 'Test updated successfully!', type: 'success' }); }
       else { await testAPI.createTest(fd, onProgress); setModal({ show: true, title: 'Success', message: 'Test created successfully!', type: 'success' }); }
       resetForm(); fetchTests();
-    } catch (error: any) { setModal({ show: true, title: 'Error', message: error.userMessage || 'Failed to save test.', type: 'error' }); }
+    } catch (error: any) { setModal({ show: true, title: 'Error', message: error.userMessage || error.message || 'Failed to save test.', type: 'error' }); }
     finally { setCreateTestLoading(false); setLoading(false); setUploadProgress(0); }
   };
 
@@ -361,7 +383,7 @@ export default function TestCreator() {
         {/* Upload Progress */}
         {loading && uploadProgress > 0 && (
           <div className="mb-4 bg-white rounded-lg p-4 shadow-sm">
-            <div className="flex justify-between text-sm mb-1"><span>Uploading...</span><span>{uploadProgress}%</span></div>
+            <div className="flex justify-between text-sm mb-1"><span>{uploadProgress < 100 ? 'Uploading images...' : 'Saving...'}</span><span>{uploadProgress}%</span></div>
             <div className="w-full bg-gray-200 rounded-full h-2"><div className="bg-blue-600 h-2 rounded-full transition-all" style={{ width: `${uploadProgress}%` }}></div></div>
           </div>
         )}

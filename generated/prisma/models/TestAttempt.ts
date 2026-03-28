@@ -46,6 +46,7 @@ export type TestAttemptMinAggregateOutputType = {
   isCompleted: boolean | null
   warningCount: number | null
   testId: string | null
+  studentId: string | null
   canResume: boolean | null
   needsResume: boolean | null
   resumeRequestedAt: Date | null
@@ -61,6 +62,7 @@ export type TestAttemptMaxAggregateOutputType = {
   isCompleted: boolean | null
   warningCount: number | null
   testId: string | null
+  studentId: string | null
   canResume: boolean | null
   needsResume: boolean | null
   resumeRequestedAt: Date | null
@@ -76,6 +78,7 @@ export type TestAttemptCountAggregateOutputType = {
   isCompleted: number
   warningCount: number
   testId: number
+  studentId: number
   canResume: number
   needsResume: number
   resumeRequestedAt: number
@@ -103,6 +106,7 @@ export type TestAttemptMinAggregateInputType = {
   isCompleted?: true
   warningCount?: true
   testId?: true
+  studentId?: true
   canResume?: true
   needsResume?: true
   resumeRequestedAt?: true
@@ -118,6 +122,7 @@ export type TestAttemptMaxAggregateInputType = {
   isCompleted?: true
   warningCount?: true
   testId?: true
+  studentId?: true
   canResume?: true
   needsResume?: true
   resumeRequestedAt?: true
@@ -133,6 +138,7 @@ export type TestAttemptCountAggregateInputType = {
   isCompleted?: true
   warningCount?: true
   testId?: true
+  studentId?: true
   canResume?: true
   needsResume?: true
   resumeRequestedAt?: true
@@ -235,6 +241,7 @@ export type TestAttemptGroupByOutputType = {
   isCompleted: boolean
   warningCount: number
   testId: string
+  studentId: string | null
   canResume: boolean
   needsResume: boolean
   resumeRequestedAt: Date | null
@@ -273,11 +280,13 @@ export type TestAttemptWhereInput = {
   isCompleted?: Prisma.BoolFilter<"TestAttempt"> | boolean
   warningCount?: Prisma.IntFilter<"TestAttempt"> | number
   testId?: Prisma.StringFilter<"TestAttempt"> | string
+  studentId?: Prisma.StringNullableFilter<"TestAttempt"> | string | null
   canResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
   needsResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
   resumeRequestedAt?: Prisma.DateTimeNullableFilter<"TestAttempt"> | Date | string | null
   answers?: Prisma.AnswerListRelationFilter
   test?: Prisma.XOR<Prisma.TestScalarRelationFilter, Prisma.TestWhereInput>
+  student?: Prisma.XOR<Prisma.StudentNullableScalarRelationFilter, Prisma.StudentWhereInput> | null
 }
 
 export type TestAttemptOrderByWithRelationInput = {
@@ -290,11 +299,13 @@ export type TestAttemptOrderByWithRelationInput = {
   isCompleted?: Prisma.SortOrder
   warningCount?: Prisma.SortOrder
   testId?: Prisma.SortOrder
+  studentId?: Prisma.SortOrderInput | Prisma.SortOrder
   canResume?: Prisma.SortOrder
   needsResume?: Prisma.SortOrder
   resumeRequestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   answers?: Prisma.AnswerOrderByRelationAggregateInput
   test?: Prisma.TestOrderByWithRelationInput
+  student?: Prisma.StudentOrderByWithRelationInput
 }
 
 export type TestAttemptWhereUniqueInput = Prisma.AtLeast<{
@@ -310,11 +321,13 @@ export type TestAttemptWhereUniqueInput = Prisma.AtLeast<{
   isCompleted?: Prisma.BoolFilter<"TestAttempt"> | boolean
   warningCount?: Prisma.IntFilter<"TestAttempt"> | number
   testId?: Prisma.StringFilter<"TestAttempt"> | string
+  studentId?: Prisma.StringNullableFilter<"TestAttempt"> | string | null
   canResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
   needsResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
   resumeRequestedAt?: Prisma.DateTimeNullableFilter<"TestAttempt"> | Date | string | null
   answers?: Prisma.AnswerListRelationFilter
   test?: Prisma.XOR<Prisma.TestScalarRelationFilter, Prisma.TestWhereInput>
+  student?: Prisma.XOR<Prisma.StudentNullableScalarRelationFilter, Prisma.StudentWhereInput> | null
 }, "id">
 
 export type TestAttemptOrderByWithAggregationInput = {
@@ -327,6 +340,7 @@ export type TestAttemptOrderByWithAggregationInput = {
   isCompleted?: Prisma.SortOrder
   warningCount?: Prisma.SortOrder
   testId?: Prisma.SortOrder
+  studentId?: Prisma.SortOrderInput | Prisma.SortOrder
   canResume?: Prisma.SortOrder
   needsResume?: Prisma.SortOrder
   resumeRequestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -350,6 +364,7 @@ export type TestAttemptScalarWhereWithAggregatesInput = {
   isCompleted?: Prisma.BoolWithAggregatesFilter<"TestAttempt"> | boolean
   warningCount?: Prisma.IntWithAggregatesFilter<"TestAttempt"> | number
   testId?: Prisma.StringWithAggregatesFilter<"TestAttempt"> | string
+  studentId?: Prisma.StringNullableWithAggregatesFilter<"TestAttempt"> | string | null
   canResume?: Prisma.BoolWithAggregatesFilter<"TestAttempt"> | boolean
   needsResume?: Prisma.BoolWithAggregatesFilter<"TestAttempt"> | boolean
   resumeRequestedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TestAttempt"> | Date | string | null
@@ -369,6 +384,7 @@ export type TestAttemptCreateInput = {
   resumeRequestedAt?: Date | string | null
   answers?: Prisma.AnswerCreateNestedManyWithoutAttemptInput
   test: Prisma.TestCreateNestedOneWithoutAttemptsInput
+  student?: Prisma.StudentCreateNestedOneWithoutAttemptsInput
 }
 
 export type TestAttemptUncheckedCreateInput = {
@@ -381,6 +397,7 @@ export type TestAttemptUncheckedCreateInput = {
   isCompleted?: boolean
   warningCount?: number
   testId: string
+  studentId?: string | null
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
@@ -401,6 +418,7 @@ export type TestAttemptUpdateInput = {
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   answers?: Prisma.AnswerUpdateManyWithoutAttemptNestedInput
   test?: Prisma.TestUpdateOneRequiredWithoutAttemptsNestedInput
+  student?: Prisma.StudentUpdateOneWithoutAttemptsNestedInput
 }
 
 export type TestAttemptUncheckedUpdateInput = {
@@ -413,6 +431,7 @@ export type TestAttemptUncheckedUpdateInput = {
   isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   warningCount?: Prisma.IntFieldUpdateOperationsInput | number
   testId?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -429,6 +448,7 @@ export type TestAttemptCreateManyInput = {
   isCompleted?: boolean
   warningCount?: number
   testId: string
+  studentId?: string | null
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
@@ -458,6 +478,7 @@ export type TestAttemptUncheckedUpdateManyInput = {
   isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   warningCount?: Prisma.IntFieldUpdateOperationsInput | number
   testId?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -483,6 +504,7 @@ export type TestAttemptCountOrderByAggregateInput = {
   isCompleted?: Prisma.SortOrder
   warningCount?: Prisma.SortOrder
   testId?: Prisma.SortOrder
+  studentId?: Prisma.SortOrder
   canResume?: Prisma.SortOrder
   needsResume?: Prisma.SortOrder
   resumeRequestedAt?: Prisma.SortOrder
@@ -503,6 +525,7 @@ export type TestAttemptMaxOrderByAggregateInput = {
   isCompleted?: Prisma.SortOrder
   warningCount?: Prisma.SortOrder
   testId?: Prisma.SortOrder
+  studentId?: Prisma.SortOrder
   canResume?: Prisma.SortOrder
   needsResume?: Prisma.SortOrder
   resumeRequestedAt?: Prisma.SortOrder
@@ -518,6 +541,7 @@ export type TestAttemptMinOrderByAggregateInput = {
   isCompleted?: Prisma.SortOrder
   warningCount?: Prisma.SortOrder
   testId?: Prisma.SortOrder
+  studentId?: Prisma.SortOrder
   canResume?: Prisma.SortOrder
   needsResume?: Prisma.SortOrder
   resumeRequestedAt?: Prisma.SortOrder
@@ -531,6 +555,48 @@ export type TestAttemptSumOrderByAggregateInput = {
 export type TestAttemptScalarRelationFilter = {
   is?: Prisma.TestAttemptWhereInput
   isNot?: Prisma.TestAttemptWhereInput
+}
+
+export type TestAttemptCreateNestedManyWithoutStudentInput = {
+  create?: Prisma.XOR<Prisma.TestAttemptCreateWithoutStudentInput, Prisma.TestAttemptUncheckedCreateWithoutStudentInput> | Prisma.TestAttemptCreateWithoutStudentInput[] | Prisma.TestAttemptUncheckedCreateWithoutStudentInput[]
+  connectOrCreate?: Prisma.TestAttemptCreateOrConnectWithoutStudentInput | Prisma.TestAttemptCreateOrConnectWithoutStudentInput[]
+  createMany?: Prisma.TestAttemptCreateManyStudentInputEnvelope
+  connect?: Prisma.TestAttemptWhereUniqueInput | Prisma.TestAttemptWhereUniqueInput[]
+}
+
+export type TestAttemptUncheckedCreateNestedManyWithoutStudentInput = {
+  create?: Prisma.XOR<Prisma.TestAttemptCreateWithoutStudentInput, Prisma.TestAttemptUncheckedCreateWithoutStudentInput> | Prisma.TestAttemptCreateWithoutStudentInput[] | Prisma.TestAttemptUncheckedCreateWithoutStudentInput[]
+  connectOrCreate?: Prisma.TestAttemptCreateOrConnectWithoutStudentInput | Prisma.TestAttemptCreateOrConnectWithoutStudentInput[]
+  createMany?: Prisma.TestAttemptCreateManyStudentInputEnvelope
+  connect?: Prisma.TestAttemptWhereUniqueInput | Prisma.TestAttemptWhereUniqueInput[]
+}
+
+export type TestAttemptUpdateManyWithoutStudentNestedInput = {
+  create?: Prisma.XOR<Prisma.TestAttemptCreateWithoutStudentInput, Prisma.TestAttemptUncheckedCreateWithoutStudentInput> | Prisma.TestAttemptCreateWithoutStudentInput[] | Prisma.TestAttemptUncheckedCreateWithoutStudentInput[]
+  connectOrCreate?: Prisma.TestAttemptCreateOrConnectWithoutStudentInput | Prisma.TestAttemptCreateOrConnectWithoutStudentInput[]
+  upsert?: Prisma.TestAttemptUpsertWithWhereUniqueWithoutStudentInput | Prisma.TestAttemptUpsertWithWhereUniqueWithoutStudentInput[]
+  createMany?: Prisma.TestAttemptCreateManyStudentInputEnvelope
+  set?: Prisma.TestAttemptWhereUniqueInput | Prisma.TestAttemptWhereUniqueInput[]
+  disconnect?: Prisma.TestAttemptWhereUniqueInput | Prisma.TestAttemptWhereUniqueInput[]
+  delete?: Prisma.TestAttemptWhereUniqueInput | Prisma.TestAttemptWhereUniqueInput[]
+  connect?: Prisma.TestAttemptWhereUniqueInput | Prisma.TestAttemptWhereUniqueInput[]
+  update?: Prisma.TestAttemptUpdateWithWhereUniqueWithoutStudentInput | Prisma.TestAttemptUpdateWithWhereUniqueWithoutStudentInput[]
+  updateMany?: Prisma.TestAttemptUpdateManyWithWhereWithoutStudentInput | Prisma.TestAttemptUpdateManyWithWhereWithoutStudentInput[]
+  deleteMany?: Prisma.TestAttemptScalarWhereInput | Prisma.TestAttemptScalarWhereInput[]
+}
+
+export type TestAttemptUncheckedUpdateManyWithoutStudentNestedInput = {
+  create?: Prisma.XOR<Prisma.TestAttemptCreateWithoutStudentInput, Prisma.TestAttemptUncheckedCreateWithoutStudentInput> | Prisma.TestAttemptCreateWithoutStudentInput[] | Prisma.TestAttemptUncheckedCreateWithoutStudentInput[]
+  connectOrCreate?: Prisma.TestAttemptCreateOrConnectWithoutStudentInput | Prisma.TestAttemptCreateOrConnectWithoutStudentInput[]
+  upsert?: Prisma.TestAttemptUpsertWithWhereUniqueWithoutStudentInput | Prisma.TestAttemptUpsertWithWhereUniqueWithoutStudentInput[]
+  createMany?: Prisma.TestAttemptCreateManyStudentInputEnvelope
+  set?: Prisma.TestAttemptWhereUniqueInput | Prisma.TestAttemptWhereUniqueInput[]
+  disconnect?: Prisma.TestAttemptWhereUniqueInput | Prisma.TestAttemptWhereUniqueInput[]
+  delete?: Prisma.TestAttemptWhereUniqueInput | Prisma.TestAttemptWhereUniqueInput[]
+  connect?: Prisma.TestAttemptWhereUniqueInput | Prisma.TestAttemptWhereUniqueInput[]
+  update?: Prisma.TestAttemptUpdateWithWhereUniqueWithoutStudentInput | Prisma.TestAttemptUpdateWithWhereUniqueWithoutStudentInput[]
+  updateMany?: Prisma.TestAttemptUpdateManyWithWhereWithoutStudentInput | Prisma.TestAttemptUpdateManyWithWhereWithoutStudentInput[]
+  deleteMany?: Prisma.TestAttemptScalarWhereInput | Prisma.TestAttemptScalarWhereInput[]
 }
 
 export type TestAttemptCreateNestedManyWithoutTestInput = {
@@ -575,10 +641,6 @@ export type TestAttemptUncheckedUpdateManyWithoutTestNestedInput = {
   deleteMany?: Prisma.TestAttemptScalarWhereInput | Prisma.TestAttemptScalarWhereInput[]
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type TestAttemptCreateNestedOneWithoutAnswersInput = {
   create?: Prisma.XOR<Prisma.TestAttemptCreateWithoutAnswersInput, Prisma.TestAttemptUncheckedCreateWithoutAnswersInput>
   connectOrCreate?: Prisma.TestAttemptCreateOrConnectWithoutAnswersInput
@@ -591,6 +653,83 @@ export type TestAttemptUpdateOneRequiredWithoutAnswersNestedInput = {
   upsert?: Prisma.TestAttemptUpsertWithoutAnswersInput
   connect?: Prisma.TestAttemptWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.TestAttemptUpdateToOneWithWhereWithoutAnswersInput, Prisma.TestAttemptUpdateWithoutAnswersInput>, Prisma.TestAttemptUncheckedUpdateWithoutAnswersInput>
+}
+
+export type TestAttemptCreateWithoutStudentInput = {
+  id?: string
+  candidateName: string
+  candidateImage?: string | null
+  startTime?: Date | string
+  endTime?: Date | string | null
+  totalMarks?: number
+  isCompleted?: boolean
+  warningCount?: number
+  canResume?: boolean
+  needsResume?: boolean
+  resumeRequestedAt?: Date | string | null
+  answers?: Prisma.AnswerCreateNestedManyWithoutAttemptInput
+  test: Prisma.TestCreateNestedOneWithoutAttemptsInput
+}
+
+export type TestAttemptUncheckedCreateWithoutStudentInput = {
+  id?: string
+  candidateName: string
+  candidateImage?: string | null
+  startTime?: Date | string
+  endTime?: Date | string | null
+  totalMarks?: number
+  isCompleted?: boolean
+  warningCount?: number
+  testId: string
+  canResume?: boolean
+  needsResume?: boolean
+  resumeRequestedAt?: Date | string | null
+  answers?: Prisma.AnswerUncheckedCreateNestedManyWithoutAttemptInput
+}
+
+export type TestAttemptCreateOrConnectWithoutStudentInput = {
+  where: Prisma.TestAttemptWhereUniqueInput
+  create: Prisma.XOR<Prisma.TestAttemptCreateWithoutStudentInput, Prisma.TestAttemptUncheckedCreateWithoutStudentInput>
+}
+
+export type TestAttemptCreateManyStudentInputEnvelope = {
+  data: Prisma.TestAttemptCreateManyStudentInput | Prisma.TestAttemptCreateManyStudentInput[]
+  skipDuplicates?: boolean
+}
+
+export type TestAttemptUpsertWithWhereUniqueWithoutStudentInput = {
+  where: Prisma.TestAttemptWhereUniqueInput
+  update: Prisma.XOR<Prisma.TestAttemptUpdateWithoutStudentInput, Prisma.TestAttemptUncheckedUpdateWithoutStudentInput>
+  create: Prisma.XOR<Prisma.TestAttemptCreateWithoutStudentInput, Prisma.TestAttemptUncheckedCreateWithoutStudentInput>
+}
+
+export type TestAttemptUpdateWithWhereUniqueWithoutStudentInput = {
+  where: Prisma.TestAttemptWhereUniqueInput
+  data: Prisma.XOR<Prisma.TestAttemptUpdateWithoutStudentInput, Prisma.TestAttemptUncheckedUpdateWithoutStudentInput>
+}
+
+export type TestAttemptUpdateManyWithWhereWithoutStudentInput = {
+  where: Prisma.TestAttemptScalarWhereInput
+  data: Prisma.XOR<Prisma.TestAttemptUpdateManyMutationInput, Prisma.TestAttemptUncheckedUpdateManyWithoutStudentInput>
+}
+
+export type TestAttemptScalarWhereInput = {
+  AND?: Prisma.TestAttemptScalarWhereInput | Prisma.TestAttemptScalarWhereInput[]
+  OR?: Prisma.TestAttemptScalarWhereInput[]
+  NOT?: Prisma.TestAttemptScalarWhereInput | Prisma.TestAttemptScalarWhereInput[]
+  id?: Prisma.StringFilter<"TestAttempt"> | string
+  candidateName?: Prisma.StringFilter<"TestAttempt"> | string
+  candidateImage?: Prisma.StringNullableFilter<"TestAttempt"> | string | null
+  startTime?: Prisma.DateTimeFilter<"TestAttempt"> | Date | string
+  endTime?: Prisma.DateTimeNullableFilter<"TestAttempt"> | Date | string | null
+  totalMarks?: Prisma.IntFilter<"TestAttempt"> | number
+  isCompleted?: Prisma.BoolFilter<"TestAttempt"> | boolean
+  warningCount?: Prisma.IntFilter<"TestAttempt"> | number
+  testId?: Prisma.StringFilter<"TestAttempt"> | string
+  studentId?: Prisma.StringNullableFilter<"TestAttempt"> | string | null
+  canResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
+  needsResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
+  resumeRequestedAt?: Prisma.DateTimeNullableFilter<"TestAttempt"> | Date | string | null
 }
 
 export type TestAttemptCreateWithoutTestInput = {
@@ -606,6 +745,7 @@ export type TestAttemptCreateWithoutTestInput = {
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
   answers?: Prisma.AnswerCreateNestedManyWithoutAttemptInput
+  student?: Prisma.StudentCreateNestedOneWithoutAttemptsInput
 }
 
 export type TestAttemptUncheckedCreateWithoutTestInput = {
@@ -617,6 +757,7 @@ export type TestAttemptUncheckedCreateWithoutTestInput = {
   totalMarks?: number
   isCompleted?: boolean
   warningCount?: number
+  studentId?: string | null
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
@@ -649,24 +790,6 @@ export type TestAttemptUpdateManyWithWhereWithoutTestInput = {
   data: Prisma.XOR<Prisma.TestAttemptUpdateManyMutationInput, Prisma.TestAttemptUncheckedUpdateManyWithoutTestInput>
 }
 
-export type TestAttemptScalarWhereInput = {
-  AND?: Prisma.TestAttemptScalarWhereInput | Prisma.TestAttemptScalarWhereInput[]
-  OR?: Prisma.TestAttemptScalarWhereInput[]
-  NOT?: Prisma.TestAttemptScalarWhereInput | Prisma.TestAttemptScalarWhereInput[]
-  id?: Prisma.StringFilter<"TestAttempt"> | string
-  candidateName?: Prisma.StringFilter<"TestAttempt"> | string
-  candidateImage?: Prisma.StringNullableFilter<"TestAttempt"> | string | null
-  startTime?: Prisma.DateTimeFilter<"TestAttempt"> | Date | string
-  endTime?: Prisma.DateTimeNullableFilter<"TestAttempt"> | Date | string | null
-  totalMarks?: Prisma.IntFilter<"TestAttempt"> | number
-  isCompleted?: Prisma.BoolFilter<"TestAttempt"> | boolean
-  warningCount?: Prisma.IntFilter<"TestAttempt"> | number
-  testId?: Prisma.StringFilter<"TestAttempt"> | string
-  canResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
-  needsResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
-  resumeRequestedAt?: Prisma.DateTimeNullableFilter<"TestAttempt"> | Date | string | null
-}
-
 export type TestAttemptCreateWithoutAnswersInput = {
   id?: string
   candidateName: string
@@ -680,6 +803,7 @@ export type TestAttemptCreateWithoutAnswersInput = {
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
   test: Prisma.TestCreateNestedOneWithoutAttemptsInput
+  student?: Prisma.StudentCreateNestedOneWithoutAttemptsInput
 }
 
 export type TestAttemptUncheckedCreateWithoutAnswersInput = {
@@ -692,6 +816,7 @@ export type TestAttemptUncheckedCreateWithoutAnswersInput = {
   isCompleted?: boolean
   warningCount?: number
   testId: string
+  studentId?: string | null
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
@@ -726,9 +851,73 @@ export type TestAttemptUpdateWithoutAnswersInput = {
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   test?: Prisma.TestUpdateOneRequiredWithoutAttemptsNestedInput
+  student?: Prisma.StudentUpdateOneWithoutAttemptsNestedInput
 }
 
 export type TestAttemptUncheckedUpdateWithoutAnswersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  candidateName?: Prisma.StringFieldUpdateOperationsInput | string
+  candidateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  warningCount?: Prisma.IntFieldUpdateOperationsInput | number
+  testId?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type TestAttemptCreateManyStudentInput = {
+  id?: string
+  candidateName: string
+  candidateImage?: string | null
+  startTime?: Date | string
+  endTime?: Date | string | null
+  totalMarks?: number
+  isCompleted?: boolean
+  warningCount?: number
+  testId: string
+  canResume?: boolean
+  needsResume?: boolean
+  resumeRequestedAt?: Date | string | null
+}
+
+export type TestAttemptUpdateWithoutStudentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  candidateName?: Prisma.StringFieldUpdateOperationsInput | string
+  candidateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  warningCount?: Prisma.IntFieldUpdateOperationsInput | number
+  canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  answers?: Prisma.AnswerUpdateManyWithoutAttemptNestedInput
+  test?: Prisma.TestUpdateOneRequiredWithoutAttemptsNestedInput
+}
+
+export type TestAttemptUncheckedUpdateWithoutStudentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  candidateName?: Prisma.StringFieldUpdateOperationsInput | string
+  candidateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
+  isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  warningCount?: Prisma.IntFieldUpdateOperationsInput | number
+  testId?: Prisma.StringFieldUpdateOperationsInput | string
+  canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  answers?: Prisma.AnswerUncheckedUpdateManyWithoutAttemptNestedInput
+}
+
+export type TestAttemptUncheckedUpdateManyWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   candidateName?: Prisma.StringFieldUpdateOperationsInput | string
   candidateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -752,6 +941,7 @@ export type TestAttemptCreateManyTestInput = {
   totalMarks?: number
   isCompleted?: boolean
   warningCount?: number
+  studentId?: string | null
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
@@ -770,6 +960,7 @@ export type TestAttemptUpdateWithoutTestInput = {
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   answers?: Prisma.AnswerUpdateManyWithoutAttemptNestedInput
+  student?: Prisma.StudentUpdateOneWithoutAttemptsNestedInput
 }
 
 export type TestAttemptUncheckedUpdateWithoutTestInput = {
@@ -781,6 +972,7 @@ export type TestAttemptUncheckedUpdateWithoutTestInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   warningCount?: Prisma.IntFieldUpdateOperationsInput | number
+  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -796,6 +988,7 @@ export type TestAttemptUncheckedUpdateManyWithoutTestInput = {
   totalMarks?: Prisma.IntFieldUpdateOperationsInput | number
   isCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   warningCount?: Prisma.IntFieldUpdateOperationsInput | number
+  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -842,11 +1035,13 @@ export type TestAttemptSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   isCompleted?: boolean
   warningCount?: boolean
   testId?: boolean
+  studentId?: boolean
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: boolean
   answers?: boolean | Prisma.TestAttempt$answersArgs<ExtArgs>
   test?: boolean | Prisma.TestDefaultArgs<ExtArgs>
+  student?: boolean | Prisma.TestAttempt$studentArgs<ExtArgs>
   _count?: boolean | Prisma.TestAttemptCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["testAttempt"]>
 
@@ -860,10 +1055,12 @@ export type TestAttemptSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   isCompleted?: boolean
   warningCount?: boolean
   testId?: boolean
+  studentId?: boolean
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: boolean
   test?: boolean | Prisma.TestDefaultArgs<ExtArgs>
+  student?: boolean | Prisma.TestAttempt$studentArgs<ExtArgs>
 }, ExtArgs["result"]["testAttempt"]>
 
 export type TestAttemptSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -876,10 +1073,12 @@ export type TestAttemptSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   isCompleted?: boolean
   warningCount?: boolean
   testId?: boolean
+  studentId?: boolean
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: boolean
   test?: boolean | Prisma.TestDefaultArgs<ExtArgs>
+  student?: boolean | Prisma.TestAttempt$studentArgs<ExtArgs>
 }, ExtArgs["result"]["testAttempt"]>
 
 export type TestAttemptSelectScalar = {
@@ -892,22 +1091,26 @@ export type TestAttemptSelectScalar = {
   isCompleted?: boolean
   warningCount?: boolean
   testId?: boolean
+  studentId?: boolean
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: boolean
 }
 
-export type TestAttemptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "candidateName" | "candidateImage" | "startTime" | "endTime" | "totalMarks" | "isCompleted" | "warningCount" | "testId" | "canResume" | "needsResume" | "resumeRequestedAt", ExtArgs["result"]["testAttempt"]>
+export type TestAttemptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "candidateName" | "candidateImage" | "startTime" | "endTime" | "totalMarks" | "isCompleted" | "warningCount" | "testId" | "studentId" | "canResume" | "needsResume" | "resumeRequestedAt", ExtArgs["result"]["testAttempt"]>
 export type TestAttemptInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   answers?: boolean | Prisma.TestAttempt$answersArgs<ExtArgs>
   test?: boolean | Prisma.TestDefaultArgs<ExtArgs>
+  student?: boolean | Prisma.TestAttempt$studentArgs<ExtArgs>
   _count?: boolean | Prisma.TestAttemptCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TestAttemptIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   test?: boolean | Prisma.TestDefaultArgs<ExtArgs>
+  student?: boolean | Prisma.TestAttempt$studentArgs<ExtArgs>
 }
 export type TestAttemptIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   test?: boolean | Prisma.TestDefaultArgs<ExtArgs>
+  student?: boolean | Prisma.TestAttempt$studentArgs<ExtArgs>
 }
 
 export type $TestAttemptPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -915,6 +1118,7 @@ export type $TestAttemptPayload<ExtArgs extends runtime.Types.Extensions.Interna
   objects: {
     answers: Prisma.$AnswerPayload<ExtArgs>[]
     test: Prisma.$TestPayload<ExtArgs>
+    student: Prisma.$StudentPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -926,6 +1130,7 @@ export type $TestAttemptPayload<ExtArgs extends runtime.Types.Extensions.Interna
     isCompleted: boolean
     warningCount: number
     testId: string
+    studentId: string | null
     canResume: boolean
     needsResume: boolean
     resumeRequestedAt: Date | null
@@ -1325,6 +1530,7 @@ export interface Prisma__TestAttemptClient<T, Null = never, ExtArgs extends runt
   readonly [Symbol.toStringTag]: "PrismaPromise"
   answers<T extends Prisma.TestAttempt$answersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TestAttempt$answersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AnswerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   test<T extends Prisma.TestDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TestDefaultArgs<ExtArgs>>): Prisma.Prisma__TestClient<runtime.Types.Result.GetResult<Prisma.$TestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  student<T extends Prisma.TestAttempt$studentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TestAttempt$studentArgs<ExtArgs>>): Prisma.Prisma__StudentClient<runtime.Types.Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1363,6 +1569,7 @@ export interface TestAttemptFieldRefs {
   readonly isCompleted: Prisma.FieldRef<"TestAttempt", 'Boolean'>
   readonly warningCount: Prisma.FieldRef<"TestAttempt", 'Int'>
   readonly testId: Prisma.FieldRef<"TestAttempt", 'String'>
+  readonly studentId: Prisma.FieldRef<"TestAttempt", 'String'>
   readonly canResume: Prisma.FieldRef<"TestAttempt", 'Boolean'>
   readonly needsResume: Prisma.FieldRef<"TestAttempt", 'Boolean'>
   readonly resumeRequestedAt: Prisma.FieldRef<"TestAttempt", 'DateTime'>
@@ -1788,6 +1995,25 @@ export type TestAttempt$answersArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.AnswerScalarFieldEnum | Prisma.AnswerScalarFieldEnum[]
+}
+
+/**
+ * TestAttempt.student
+ */
+export type TestAttempt$studentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Student
+   */
+  select?: Prisma.StudentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Student
+   */
+  omit?: Prisma.StudentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StudentInclude<ExtArgs> | null
+  where?: Prisma.StudentWhereInput
 }
 
 /**

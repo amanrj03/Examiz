@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getTokenFromRequest } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
   try {
+    const payload = getTokenFromRequest(req);
     const { testId, candidateName, candidateImage } = await req.json();
+    const studentId = payload?.role === 'student' ? payload.id : null;
 
     const test = await prisma.test.findUnique({
       where: { id: testId },
@@ -17,6 +20,24 @@ export async function POST(req: NextRequest) {
 
     if (!test) return NextResponse.json({ error: 'Test not found' }, { status: 404 });
     if (!test.isLive) return NextResponse.json({ error: 'Test is not live' }, { status: 400 });
+
+    // Enforce start/end time window
+    const now = new Date();
+    if (test.startTime && now < test.startTime) {
+      const startsAt = test.startTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      return NextResponse.json({ error: `Test hasn't started yet. It opens at ${startsAt}.` }, { status: 403 });
+    }
+    if (test.endTime && now > test.endTime) {
+      return NextResponse.json({ error: 'The window to start this test has closed.' }, { status: 403 });
+    }
+
+    // If a logged-in student, verify the test is assigned to their class
+    if (payload?.role === 'student') {
+      const assigned = await prisma.testClass.findFirst({
+        where: { testId, classId: payload.classId },
+      });
+      if (!assigned) return NextResponse.json({ error: 'This test is not available for your class' }, { status: 403 });
+    }
 
     const existingAttempt = await prisma.testAttempt.findFirst({
       where: { testId, candidateName },
@@ -38,6 +59,7 @@ export async function POST(req: NextRequest) {
         testId,
         candidateName,
         candidateImage,
+        studentId,
         answers: {
           create: test.sections.flatMap((section) =>
             section.questions.map((question) => ({

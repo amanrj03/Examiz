@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { attemptAPI } from '../../../services/api';
 import { useFullscreen } from '../../../hooks/useFullscreen';
 import { useTimer } from '../../../hooks/useTimer';
@@ -18,6 +19,9 @@ import SectionInstructionModal from '../../../components/SectionInstructionModal
 export default function TestWindow() {
   const { attemptId } = useParams<{ attemptId: string }>();
   const router = useRouter();
+  const { user } = useAuth();
+  const candidateName = user?.role === 'student' ? user.name : '';
+  const candidateImage = user?.role === 'student' ? (user.profilePic || '') : '';
   const [attempt, setAttempt] = useState<any>(null);
   const [currentSection, setCurrentSection] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -30,9 +34,6 @@ export default function TestWindow() {
   const [errorModal, setErrorModal] = useState({ show: false, title: '', message: '' });
   const syncIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const submittingRef = useRef(false);
-
-  const candidateName = typeof window !== 'undefined' ? localStorage.getItem('candidateName') : '';
-  const candidateImage = typeof window !== 'undefined' ? localStorage.getItem('candidateImage') : '';
 
   const { startQuestionTimer, stopCurrentTimer, syncTimeData } = useTimeTracking(attemptId);
 
@@ -234,7 +235,7 @@ export default function TestWindow() {
     <div className="h-screen bg-white flex flex-col overflow-hidden">
       {/* Header */}
       <div className="bg-blue-900 text-white px-6 py-3 flex justify-between items-center flex-shrink-0">
-        <img src="/nta-logo.png" alt="NTA Logo" className="h-10" />
+        <img src="/examizLogo.png" alt="Examiz" className="h-10" />
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
             {candidateImage && <img src={candidateImage} alt="Candidate" className="w-10 h-10 object-cover" />}

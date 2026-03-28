@@ -35,7 +35,7 @@ export default function PreviewTest() {
     <div className="min-h-screen bg-gray-100 pb-20">
       <div className="bg-blue-900 text-white px-6 py-3 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <img src="/nta-logo.png" alt="NTA Logo" className="h-10" />
+          <img src="/examizLogo.png" alt="Examiz" className="h-10" />
           <div>
             <h1 className="text-xl font-bold">Test Preview: {test.name}</h1>
             <p className="text-sm opacity-90">Duration: {Math.floor(test.duration / 60)}h {test.duration % 60}m | Total Marks: {test.totalMarks}</p>

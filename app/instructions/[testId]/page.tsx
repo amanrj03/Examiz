@@ -1,19 +1,55 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { testAPI, attemptAPI } from '../../../services/api';
 import Modal from '../../../components/Modal';
+
+function useTimeWindow(test: any) {
+  const [status, setStatus] = useState<'loading' | 'before' | 'open' | 'closed'>('loading');
+  const [countdown, setCountdown] = useState('');
+
+  const compute = useCallback(() => {
+    if (!test) return;
+    const now = new Date();
+    const start = test.startTime ? new Date(test.startTime) : null;
+    const end   = test.endTime   ? new Date(test.endTime)   : null;
+
+    if (end && now > end)          { setStatus('closed'); return; }
+    if (start && now < start) {
+      setStatus('before');
+      const diff = Math.max(0, start.getTime() - now.getTime());
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setCountdown(`${h > 0 ? h + 'h ' : ''}${m}m ${s}s`);
+      return;
+    }
+    setStatus('open');
+  }, [test]);
+
+  useEffect(() => {
+    compute();
+    const t = setInterval(compute, 1000);
+    return () => clearInterval(t);
+  }, [compute]);
+
+  return { status, countdown };
+}
 
 export default function InstructionPage() {
   const { testId } = useParams<{ testId: string }>();
   const router = useRouter();
+  const { user } = useAuth();
   const [test, setTest] = useState<any>(null);
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorModal, setErrorModal] = useState({ show: false, title: '', message: '', redirectToDashboard: false });
 
-  const candidateName = typeof window !== 'undefined' ? localStorage.getItem('candidateName') : '';
-  const candidateImage = typeof window !== 'undefined' ? localStorage.getItem('candidateImage') : '';
+  const candidateName = user?.role === 'student' ? user.name : '';
+  const candidateImage = user?.role === 'student' ? (user.profilePic || '') : '';
+
+  const { status, countdown } = useTimeWindow(test);
 
   useEffect(() => { fetchTest(); }, [testId]);
 
@@ -55,7 +91,7 @@ export default function InstructionPage() {
     <div className="min-h-screen bg-gray-100">
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <img src="/nta-logo.png" alt="NTA Logo" className="h-12" />
+          <img src="/examizLogo.png" alt="Examiz" className="h-12" />
           <div className="flex items-center gap-4">
             {candidateImage && <img src={candidateImage} alt="Candidate" className="w-10 h-10 rounded-full object-cover" />}
             <p className="font-medium">{candidateName}</p>
@@ -150,10 +186,33 @@ export default function InstructionPage() {
             </label>
           </div>
 
+          {/* Time window status */}
+          {status === 'before' && (
+            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+              <p className="text-yellow-800 font-semibold text-sm">⏳ Test hasn't started yet</p>
+              <p className="text-yellow-700 text-xs mt-1">
+                Starts at {new Date(test.startTime).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+              </p>
+              <p className="text-2xl font-bold text-yellow-800 mt-2">{countdown}</p>
+            </div>
+          )}
+          {status === 'closed' && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg text-center">
+              <p className="text-red-700 font-semibold text-sm">🚫 The window to start this test has closed.</p>
+              <p className="text-red-600 text-xs mt-1">
+                It ended at {new Date(test.endTime).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+              </p>
+            </div>
+          )}
+
           <div className="mt-8 flex justify-center gap-4">
             <button onClick={() => router.push('/student')} className="px-6 py-3 bg-gray-500 text-white rounded-md hover:bg-gray-600 font-medium">Back to Dashboard</button>
-            <button onClick={startTest} disabled={!agreed || loading} className="px-8 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
-              {loading ? 'Starting Test...' : 'Start Test'}
+            <button
+              onClick={startTest}
+              disabled={!agreed || loading || status === 'before' || status === 'closed'}
+              className="px-8 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Starting Test...' : status === 'before' ? 'Not Started Yet' : status === 'closed' ? 'Window Closed' : 'Start Test'}
             </button>
           </div>
         </div>

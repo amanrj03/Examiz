@@ -2,18 +2,26 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { parseForm } from '@/lib/parseForm';
 import { uploadToCloudinary, isExistingCloudinaryUrl } from '@/lib/cloudinary';
+import { getTokenFromRequest } from '@/lib/auth';
 import formidable from 'formidable';
 
+export const maxDuration = 60; // seconds
+
 // GET /api/tests
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const payload = getTokenFromRequest(req);
+    const where = payload?.role === 'org' ? { organizationId: payload.id } : {};
+
     const tests = await prisma.test.findMany({
+      where,
       include: {
         sections: {
           include: { questions: { orderBy: { questionNumber: 'asc' } } },
           orderBy: { order: 'asc' },
         },
         attempts: true,
+        testClasses: { select: { classId: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -27,6 +35,7 @@ export async function GET() {
 // POST /api/tests
 export async function POST(req: NextRequest) {
   try {
+    const payload = getTokenFromRequest(req);
     const { fields, files } = await parseForm(req);
 
     const name = Array.isArray(fields.name) ? fields.name[0] : fields.name;
@@ -57,6 +66,7 @@ export async function POST(req: NextRequest) {
         totalMarks,
         isDraft: isDraft === 'true',
         enableGraphicalAnalysis: enableGraphicalAnalysis === 'true',
+        organizationId: payload?.role === 'org' ? payload.id : null,
         sections: {
           create: await Promise.all(
             parsedSections.map(

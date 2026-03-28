@@ -8,6 +8,8 @@ import {
 } from '@/lib/cloudinary';
 import formidable from 'formidable';
 
+export const maxDuration = 60; // seconds
+
 // GET /api/tests/[id]
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {

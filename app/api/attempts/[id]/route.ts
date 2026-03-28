@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getTokenFromRequest } from '@/lib/auth';
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -15,6 +16,8 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    const payload = getTokenFromRequest(_req);
+
     const attempt = await prisma.testAttempt.findUnique({
       where: { id },
       include: {
@@ -30,6 +33,12 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       },
     });
     if (!attempt) return NextResponse.json({ error: 'Attempt not found' }, { status: 404 });
+
+    // Students can only access their own attempt
+    if (payload?.role === 'student' && attempt.studentId !== payload.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     return NextResponse.json(attempt);
   } catch (error) {
     console.error('GET /api/attempts/[id] error:', error);

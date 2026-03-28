@@ -16,11 +16,11 @@ api.interceptors.response.use(
     } else if (error.response?.status === 503) {
       error.userMessage = error.response.data?.message || 'Service temporarily unavailable.';
     } else if (error.response?.status >= 500) {
-      error.userMessage = 'Server error. Please try again later.';
+      error.userMessage = error.response.data?.error || error.response.data?.message || 'Server error. Please try again later.';
     } else if (error.response?.status === 404) {
       error.userMessage = 'Resource not found.';
     } else if (error.response?.status >= 400) {
-      error.userMessage = error.response.data?.message || 'Request failed.';
+      error.userMessage = error.response.data?.error || error.response.data?.message || `Request failed (${error.response.status}).`;
     } else {
       error.userMessage = 'An unexpected error occurred.';
     }

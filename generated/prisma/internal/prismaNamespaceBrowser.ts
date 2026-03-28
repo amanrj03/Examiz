@@ -51,7 +51,11 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Organization: 'Organization',
+  Class: 'Class',
+  Student: 'Student',
   Test: 'Test',
+  TestClass: 'TestClass',
   Section: 'Section',
   Question: 'Question',
   TestAttempt: 'TestAttempt',
@@ -74,6 +78,47 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const OrganizationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  password: 'password',
+  logo: 'logo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
+
+
+export const ClassScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  organizationId: 'organizationId',
+  createdAt: 'createdAt'
+} as const
+
+export type ClassScalarFieldEnum = (typeof ClassScalarFieldEnum)[keyof typeof ClassScalarFieldEnum]
+
+
+export const StudentScalarFieldEnum = {
+  id: 'id',
+  registrationNo: 'registrationNo',
+  name: 'name',
+  phone: 'phone',
+  username: 'username',
+  password: 'password',
+  profilePic: 'profilePic',
+  gender: 'gender',
+  classId: 'classId',
+  organizationId: 'organizationId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StudentScalarFieldEnum = (typeof StudentScalarFieldEnum)[keyof typeof StudentScalarFieldEnum]
+
+
 export const TestScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -83,10 +128,21 @@ export const TestScalarFieldEnum = {
   enableGraphicalAnalysis: 'enableGraphicalAnalysis',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  isDraft: 'isDraft'
+  isDraft: 'isDraft',
+  organizationId: 'organizationId',
+  startTime: 'startTime',
+  endTime: 'endTime'
 } as const
 
 export type TestScalarFieldEnum = (typeof TestScalarFieldEnum)[keyof typeof TestScalarFieldEnum]
+
+
+export const TestClassScalarFieldEnum = {
+  testId: 'testId',
+  classId: 'classId'
+} as const
+
+export type TestClassScalarFieldEnum = (typeof TestClassScalarFieldEnum)[keyof typeof TestClassScalarFieldEnum]
 
 
 export const SectionScalarFieldEnum = {
@@ -130,6 +186,7 @@ export const TestAttemptScalarFieldEnum = {
   isCompleted: 'isCompleted',
   warningCount: 'warningCount',
   testId: 'testId',
+  studentId: 'studentId',
   canResume: 'canResume',
   needsResume: 'needsResume',
   resumeRequestedAt: 'resumeRequestedAt'

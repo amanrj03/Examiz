@@ -7,21 +7,99 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─── Organization (teacher / college / coaching) ───────────────────────────
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  logo      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  classes Class[]
+  tests   Test[]
+
+  @@map("organizations")
+}
+
+// ─── Class ──────────────────────────────────────────────────────────────────
+
+model Class {
+  id             String       @id @default(cuid())
+  name           String
+  organizationId String
+  createdAt      DateTime     @default(now())
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  students     Student[]
+  testClasses  TestClass[]
+
+  @@map("classes")
+}
+
+// ─── Student ────────────────────────────────────────────────────────────────
+
+model Student {
+  id             String   @id @default(cuid())
+  registrationNo String
+  name           String
+  phone          String?
+  username       String   @unique   // <registrationNo>@examiz.com
+  password       String
+  profilePic     String?
+  gender         String?
+  classId        String
+  organizationId String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  class        Class         @relation(fields: [classId], references: [id], onDelete: Cascade)
+  attempts     TestAttempt[]
+
+  @@unique([registrationNo, organizationId])
+  @@map("students")
+}
+
+// ─── Test ────────────────────────────────────────────────────────────────────
+
 model Test {
-  id         String        @id @default(cuid())
-  name       String
-  duration   Int
-  totalMarks Int           @default(0)
-  isLive     Boolean       @default(false)
+  id                     String   @id @default(cuid())
+  name                   String
+  duration               Int
+  totalMarks             Int      @default(0)
+  isLive                 Boolean  @default(false)
   enableGraphicalAnalysis Boolean @default(true)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  isDraft    Boolean       @default(false)
-  sections   Section[]
-  attempts   TestAttempt[]
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  isDraft                Boolean  @default(false)
+  organizationId         String?
+  startTime              DateTime?
+  endTime                DateTime?
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  sections     Section[]
+  attempts     TestAttempt[]
+  testClasses  TestClass[]
 
   @@map("tests")
 }
+
+// ─── TestClass (which classes a test is assigned to) ────────────────────────
+
+model TestClass {
+  testId  String
+  classId String
+
+  test  Test  @relation(fields: [testId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@id([testId, classId])
+  @@map("test_classes")
+}
+
+// ─── Section ────────────────────────────────────────────────────────────────
 
 model Section {
   id            String       @id @default(cuid())
@@ -35,6 +113,8 @@ model Section {
 
   @@map("sections")
 }
+
+// ─── Question ───────────────────────────────────────────────────────────────
 
 model Question {
   id             String   @id @default(cuid())
@@ -56,6 +136,8 @@ model Question {
   @@map("questions")
 }
 
+// ─── TestAttempt ─────────────────────────────────────────────────────────────
+
 model TestAttempt {
   id                String    @id @default(cuid())
   candidateName     String
@@ -66,14 +148,19 @@ model TestAttempt {
   isCompleted       Boolean   @default(false)
   warningCount      Int       @default(0)
   testId            String
+  studentId         String?
   canResume         Boolean   @default(false)
   needsResume       Boolean   @default(false)
   resumeRequestedAt DateTime?
-  answers           Answer[]
-  test              Test      @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  answers Answer[]
+  test    Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  student Student? @relation(fields: [studentId], references: [id], onDelete: SetNull)
 
   @@map("test_attempts")
 }
+
+// ─── Answer ──────────────────────────────────────────────────────────────────
 
 model Answer {
   id              String       @id @default(cuid())
@@ -89,12 +176,15 @@ model Answer {
   lastVisitTime   DateTime?
   timeSpent       Int          @default(0)
   visitCount      Int          @default(0)
-  attempt         TestAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
-  question        Question     @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  attempt  TestAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@unique([attemptId, questionId])
   @@map("answers")
 }
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
 
 enum QuestionType {
   SINGLE_CORRECT

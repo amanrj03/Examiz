@@ -23,6 +23,7 @@ export default function StudentDashboard() {
   const { user, loading, logout } = useAuth();
   const [liveTests, setLiveTests] = useState<any[]>([]);
   const [attemptedTests, setAttemptedTests] = useState<any[]>([]);
+  const [disconnectedTests, setDisconnectedTests] = useState<any[]>([]);
   const [testsLoading, setTestsLoading] = useState(true);
   const [showProfileCard, setShowProfileCard] = useState(false);
   const [activeTab, setActiveTab] = useState<'live' | 'results'>('live');
@@ -52,9 +53,12 @@ export default function StudentDashboard() {
   const fetchTests = async () => {
     try {
       const [liveRes, attRes] = await Promise.all([testAPI.getLiveTests(), axios.get('/api/attempts/user/me')]);
-      const completedIds = attRes.data.filter((a: any) => a.isCompleted).map((a: any) => a.testId);
-      setLiveTests(liveRes.data.filter((t: any) => !completedIds.includes(t.id)));
-      setAttemptedTests(attRes.data.filter((a: any) => a.isCompleted));
+      const allAttempts: any[] = attRes.data;
+      const completedIds = allAttempts.filter((a) => a.isCompleted).map((a) => a.testId);
+      const incompleteAttempts = allAttempts.filter((a) => !a.isCompleted);
+      setLiveTests(liveRes.data.filter((t: any) => !completedIds.includes(t.id) && !incompleteAttempts.find((a) => a.testId === t.id)));
+      setAttemptedTests(allAttempts.filter((a) => a.isCompleted));
+      setDisconnectedTests(incompleteAttempts);
     } catch {} finally {
       setTestsLoading(false);
     }
@@ -174,12 +178,14 @@ export default function StudentDashboard() {
           {(['live', 'results'] as const).map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={`px-5 py-2 rounded-lg text-sm font-medium transition ${activeTab === tab ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-              {tab === 'live' ? `Live Tests ${liveTests.length > 0 ? `(${liveTests.length})` : ''}` : `My Results ${attemptedTests.length > 0 ? `(${attemptedTests.length})` : ''}`}
+              {tab === 'live'
+                ? `Tests ${(liveTests.length + disconnectedTests.length) > 0 ? `(${liveTests.length + disconnectedTests.length})` : ''}`
+                : `My Results ${attemptedTests.length > 0 ? `(${attemptedTests.length})` : ''}`}
             </button>
           ))}
         </div>
 
-        {/* Live Tests tab */}
+        {/* Tests tab — live + interrupted combined */}
         {activeTab === 'live' && (
           <div>
             {testsLoading ? (
@@ -200,14 +206,47 @@ export default function StudentDashboard() {
                   </div>
                 ))}
               </div>
-            ) : liveTests.length === 0 ? (
+            ) : liveTests.length === 0 && disconnectedTests.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
                 <p className="text-4xl mb-3">📭</p>
-                <p className="font-medium text-gray-600">No live tests right now</p>
+                <p className="font-medium text-gray-600">No tests right now</p>
                 <p className="text-sm text-gray-400 mt-1">Your institution will activate tests here</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Interrupted/disconnected tests first */}
+                {disconnectedTests.map((attempt: any) => (
+                  <div key={attempt.id} className="bg-white rounded-2xl border border-orange-200 overflow-hidden">
+                    <div className="h-1.5 w-full bg-orange-400" />
+                    <div className="p-5">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-semibold text-gray-800">{attempt.test.name}</h3>
+                          <p className="text-xs text-gray-500 mt-0.5">Started: {new Date(attempt.startTime).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
+                        </div>
+                        <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full font-medium flex-shrink-0">Interrupted</span>
+                      </div>
+                      {attempt.needsResume && !attempt.canResume ? (
+                        <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 text-sm text-orange-700">
+                          ⏳ Resume permission required — contact your institute to continue.
+                        </div>
+                      ) : attempt.canResume ? (
+                        <button
+                          onClick={() => router.push(`/instructions/${attempt.testId}`)}
+                          className="w-full py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition"
+                        >
+                          Resume Test →
+                        </button>
+                      ) : (
+                        <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-gray-500">
+                          Test was interrupted. Contact your institute for assistance.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Live tests */}
                 {liveTests.map((test) => {
                   const now = new Date();
                   const startTime = test.startTime ? new Date(test.startTime) : null;

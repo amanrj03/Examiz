@@ -55,6 +55,8 @@ export const attemptAPI = {
   getResumeRequests: () => api.get('/attempts/resume-requests'),
   syncTimeData: (attemptId: string, data: object) =>
     api.put(`/attempts/${attemptId}/sync-times`, data),
+  syncElapsed: (data: object) => api.post('/attempts/sync-elapsed', data),
+  syncRemaining: (data: object) => api.post('/attempts/sync-remaining', data),
   recalculateMarks: (attemptId: string) => api.post(`/attempts/${attemptId}/recalculate`),
   deleteAttempt: (attemptId: string) => api.delete(`/attempts/${attemptId}`),
 };

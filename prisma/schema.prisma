@@ -154,6 +154,9 @@ model TestAttempt {
   canResume         Boolean   @default(false)
   needsResume       Boolean   @default(false)
   resumeRequestedAt DateTime?
+  elapsedSeconds    Int       @default(0)
+  remainingTime     Int?      // remaining seconds, saved every 60s, null = not started yet
+  lastSyncAt        DateTime? // updated on every answer sync — used to detect disconnected status
 
   answers Answer[]
   test    Test     @relation(fields: [testId], references: [id], onDelete: Cascade)

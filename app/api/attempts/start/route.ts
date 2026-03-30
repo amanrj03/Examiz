@@ -21,14 +21,21 @@ export async function POST(req: NextRequest) {
     if (!test) return NextResponse.json({ error: 'Test not found' }, { status: 404 });
     if (!test.isLive) return NextResponse.json({ error: 'Test is not live' }, { status: 400 });
 
-    // Enforce start/end time window
-    const now = new Date();
-    if (test.startTime && now < test.startTime) {
-      const startsAt = test.startTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-      return NextResponse.json({ error: `Test hasn't started yet. It opens at ${startsAt}.` }, { status: 403 });
-    }
-    if (test.endTime && now > test.endTime) {
-      return NextResponse.json({ error: 'The window to start this test has closed.' }, { status: 403 });
+    // Check if student has an existing attempt first (reconnect case — bypass time window)
+    const existingAttemptCheck = await prisma.testAttempt.findFirst({
+      where: { testId, candidateName },
+    });
+
+    // Only enforce time window for NEW attempts
+    if (!existingAttemptCheck) {
+      const now = new Date();
+      if (test.startTime && now < test.startTime) {
+        const startsAt = test.startTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+        return NextResponse.json({ error: `Test hasn't started yet. It opens at ${startsAt}.` }, { status: 403 });
+      }
+      if (test.endTime && now > test.endTime) {
+        return NextResponse.json({ error: 'The window to start this test has closed.' }, { status: 403 });
+      }
     }
 
     // If a logged-in student, verify the test is assigned to their class
@@ -39,19 +46,51 @@ export async function POST(req: NextRequest) {
       if (!assigned) return NextResponse.json({ error: 'This test is not available for your class' }, { status: 403 });
     }
 
-    const existingAttempt = await prisma.testAttempt.findFirst({
-      where: { testId, candidateName },
-    });
+    const existingAttempt = existingAttemptCheck;
 
     if (existingAttempt) {
       if (existingAttempt.isCompleted)
         return NextResponse.json({ error: 'You have already completed this test' }, { status: 400 });
-      if (existingAttempt.needsResume && !existingAttempt.canResume)
-        return NextResponse.json(
-          { error: 'Resume permission required', attemptId: existingAttempt.id, needsResume: true },
-          { status: 403 }
-        );
-      await prisma.testAttempt.delete({ where: { id: existingAttempt.id } });
+
+      // If student was disconnected, require resume permission from institute
+      if (!existingAttempt.canResume) {
+        // Mark as needing resume if not already
+        if (!existingAttempt.needsResume) {
+          await prisma.testAttempt.update({
+            where: { id: existingAttempt.id },
+            data: { needsResume: true, resumeRequestedAt: new Date() },
+          });
+        }
+        return NextResponse.json({
+          error: 'Resume permission required. Please contact your institute.',
+          needsResume: true,
+          attemptId: existingAttempt.id,
+        }, { status: 403 });
+      }
+
+      // Resume permitted — return existing attempt
+      const fullAttempt = await prisma.testAttempt.findUnique({
+        where: { id: existingAttempt.id },
+        include: {
+          test: {
+            include: {
+              sections: {
+                include: { questions: { orderBy: { questionNumber: 'asc' } } },
+                orderBy: { order: 'asc' },
+              },
+            },
+          },
+          answers: { include: { question: true } },
+        },
+      });
+
+      // Reset canResume after granting so it needs re-approval next time
+      await prisma.testAttempt.update({
+        where: { id: existingAttempt.id },
+        data: { canResume: false, needsResume: false },
+      });
+
+      return NextResponse.json(fullAttempt, { status: 200 });
     }
 
     const attempt = await prisma.testAttempt.create({

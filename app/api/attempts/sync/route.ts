@@ -32,6 +32,12 @@ export async function POST(req: NextRequest) {
       )
     );
 
+    // Update lastSyncAt on the attempt so we can detect disconnected students
+    await prisma.testAttempt.update({
+      where: { id: attemptId },
+      data: { lastSyncAt: new Date() },
+    });
+
     return NextResponse.json({ success: true, synced: answers.length });
   } catch (error) {
     console.error('POST /api/attempts/sync error:', error);

@@ -29,11 +29,15 @@ export type AggregateTestAttempt = {
 export type TestAttemptAvgAggregateOutputType = {
   totalMarks: number | null
   warningCount: number | null
+  elapsedSeconds: number | null
+  remainingTime: number | null
 }
 
 export type TestAttemptSumAggregateOutputType = {
   totalMarks: number | null
   warningCount: number | null
+  elapsedSeconds: number | null
+  remainingTime: number | null
 }
 
 export type TestAttemptMinAggregateOutputType = {
@@ -50,6 +54,9 @@ export type TestAttemptMinAggregateOutputType = {
   canResume: boolean | null
   needsResume: boolean | null
   resumeRequestedAt: Date | null
+  elapsedSeconds: number | null
+  remainingTime: number | null
+  lastSyncAt: Date | null
 }
 
 export type TestAttemptMaxAggregateOutputType = {
@@ -66,6 +73,9 @@ export type TestAttemptMaxAggregateOutputType = {
   canResume: boolean | null
   needsResume: boolean | null
   resumeRequestedAt: Date | null
+  elapsedSeconds: number | null
+  remainingTime: number | null
+  lastSyncAt: Date | null
 }
 
 export type TestAttemptCountAggregateOutputType = {
@@ -82,6 +92,9 @@ export type TestAttemptCountAggregateOutputType = {
   canResume: number
   needsResume: number
   resumeRequestedAt: number
+  elapsedSeconds: number
+  remainingTime: number
+  lastSyncAt: number
   _all: number
 }
 
@@ -89,11 +102,15 @@ export type TestAttemptCountAggregateOutputType = {
 export type TestAttemptAvgAggregateInputType = {
   totalMarks?: true
   warningCount?: true
+  elapsedSeconds?: true
+  remainingTime?: true
 }
 
 export type TestAttemptSumAggregateInputType = {
   totalMarks?: true
   warningCount?: true
+  elapsedSeconds?: true
+  remainingTime?: true
 }
 
 export type TestAttemptMinAggregateInputType = {
@@ -110,6 +127,9 @@ export type TestAttemptMinAggregateInputType = {
   canResume?: true
   needsResume?: true
   resumeRequestedAt?: true
+  elapsedSeconds?: true
+  remainingTime?: true
+  lastSyncAt?: true
 }
 
 export type TestAttemptMaxAggregateInputType = {
@@ -126,6 +146,9 @@ export type TestAttemptMaxAggregateInputType = {
   canResume?: true
   needsResume?: true
   resumeRequestedAt?: true
+  elapsedSeconds?: true
+  remainingTime?: true
+  lastSyncAt?: true
 }
 
 export type TestAttemptCountAggregateInputType = {
@@ -142,6 +165,9 @@ export type TestAttemptCountAggregateInputType = {
   canResume?: true
   needsResume?: true
   resumeRequestedAt?: true
+  elapsedSeconds?: true
+  remainingTime?: true
+  lastSyncAt?: true
   _all?: true
 }
 
@@ -245,6 +271,9 @@ export type TestAttemptGroupByOutputType = {
   canResume: boolean
   needsResume: boolean
   resumeRequestedAt: Date | null
+  elapsedSeconds: number
+  remainingTime: number | null
+  lastSyncAt: Date | null
   _count: TestAttemptCountAggregateOutputType | null
   _avg: TestAttemptAvgAggregateOutputType | null
   _sum: TestAttemptSumAggregateOutputType | null
@@ -284,6 +313,9 @@ export type TestAttemptWhereInput = {
   canResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
   needsResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
   resumeRequestedAt?: Prisma.DateTimeNullableFilter<"TestAttempt"> | Date | string | null
+  elapsedSeconds?: Prisma.IntFilter<"TestAttempt"> | number
+  remainingTime?: Prisma.IntNullableFilter<"TestAttempt"> | number | null
+  lastSyncAt?: Prisma.DateTimeNullableFilter<"TestAttempt"> | Date | string | null
   answers?: Prisma.AnswerListRelationFilter
   test?: Prisma.XOR<Prisma.TestScalarRelationFilter, Prisma.TestWhereInput>
   student?: Prisma.XOR<Prisma.StudentNullableScalarRelationFilter, Prisma.StudentWhereInput> | null
@@ -303,6 +335,9 @@ export type TestAttemptOrderByWithRelationInput = {
   canResume?: Prisma.SortOrder
   needsResume?: Prisma.SortOrder
   resumeRequestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  elapsedSeconds?: Prisma.SortOrder
+  remainingTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastSyncAt?: Prisma.SortOrderInput | Prisma.SortOrder
   answers?: Prisma.AnswerOrderByRelationAggregateInput
   test?: Prisma.TestOrderByWithRelationInput
   student?: Prisma.StudentOrderByWithRelationInput
@@ -325,6 +360,9 @@ export type TestAttemptWhereUniqueInput = Prisma.AtLeast<{
   canResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
   needsResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
   resumeRequestedAt?: Prisma.DateTimeNullableFilter<"TestAttempt"> | Date | string | null
+  elapsedSeconds?: Prisma.IntFilter<"TestAttempt"> | number
+  remainingTime?: Prisma.IntNullableFilter<"TestAttempt"> | number | null
+  lastSyncAt?: Prisma.DateTimeNullableFilter<"TestAttempt"> | Date | string | null
   answers?: Prisma.AnswerListRelationFilter
   test?: Prisma.XOR<Prisma.TestScalarRelationFilter, Prisma.TestWhereInput>
   student?: Prisma.XOR<Prisma.StudentNullableScalarRelationFilter, Prisma.StudentWhereInput> | null
@@ -344,6 +382,9 @@ export type TestAttemptOrderByWithAggregationInput = {
   canResume?: Prisma.SortOrder
   needsResume?: Prisma.SortOrder
   resumeRequestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  elapsedSeconds?: Prisma.SortOrder
+  remainingTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastSyncAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.TestAttemptCountOrderByAggregateInput
   _avg?: Prisma.TestAttemptAvgOrderByAggregateInput
   _max?: Prisma.TestAttemptMaxOrderByAggregateInput
@@ -368,6 +409,9 @@ export type TestAttemptScalarWhereWithAggregatesInput = {
   canResume?: Prisma.BoolWithAggregatesFilter<"TestAttempt"> | boolean
   needsResume?: Prisma.BoolWithAggregatesFilter<"TestAttempt"> | boolean
   resumeRequestedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TestAttempt"> | Date | string | null
+  elapsedSeconds?: Prisma.IntWithAggregatesFilter<"TestAttempt"> | number
+  remainingTime?: Prisma.IntNullableWithAggregatesFilter<"TestAttempt"> | number | null
+  lastSyncAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TestAttempt"> | Date | string | null
 }
 
 export type TestAttemptCreateInput = {
@@ -382,6 +426,9 @@ export type TestAttemptCreateInput = {
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
+  elapsedSeconds?: number
+  remainingTime?: number | null
+  lastSyncAt?: Date | string | null
   answers?: Prisma.AnswerCreateNestedManyWithoutAttemptInput
   test: Prisma.TestCreateNestedOneWithoutAttemptsInput
   student?: Prisma.StudentCreateNestedOneWithoutAttemptsInput
@@ -401,6 +448,9 @@ export type TestAttemptUncheckedCreateInput = {
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
+  elapsedSeconds?: number
+  remainingTime?: number | null
+  lastSyncAt?: Date | string | null
   answers?: Prisma.AnswerUncheckedCreateNestedManyWithoutAttemptInput
 }
 
@@ -416,6 +466,9 @@ export type TestAttemptUpdateInput = {
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  elapsedSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  remainingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   answers?: Prisma.AnswerUpdateManyWithoutAttemptNestedInput
   test?: Prisma.TestUpdateOneRequiredWithoutAttemptsNestedInput
   student?: Prisma.StudentUpdateOneWithoutAttemptsNestedInput
@@ -435,6 +488,9 @@ export type TestAttemptUncheckedUpdateInput = {
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  elapsedSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  remainingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   answers?: Prisma.AnswerUncheckedUpdateManyWithoutAttemptNestedInput
 }
 
@@ -452,6 +508,9 @@ export type TestAttemptCreateManyInput = {
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
+  elapsedSeconds?: number
+  remainingTime?: number | null
+  lastSyncAt?: Date | string | null
 }
 
 export type TestAttemptUpdateManyMutationInput = {
@@ -466,6 +525,9 @@ export type TestAttemptUpdateManyMutationInput = {
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  elapsedSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  remainingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type TestAttemptUncheckedUpdateManyInput = {
@@ -482,6 +544,9 @@ export type TestAttemptUncheckedUpdateManyInput = {
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  elapsedSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  remainingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type TestAttemptListRelationFilter = {
@@ -508,11 +573,16 @@ export type TestAttemptCountOrderByAggregateInput = {
   canResume?: Prisma.SortOrder
   needsResume?: Prisma.SortOrder
   resumeRequestedAt?: Prisma.SortOrder
+  elapsedSeconds?: Prisma.SortOrder
+  remainingTime?: Prisma.SortOrder
+  lastSyncAt?: Prisma.SortOrder
 }
 
 export type TestAttemptAvgOrderByAggregateInput = {
   totalMarks?: Prisma.SortOrder
   warningCount?: Prisma.SortOrder
+  elapsedSeconds?: Prisma.SortOrder
+  remainingTime?: Prisma.SortOrder
 }
 
 export type TestAttemptMaxOrderByAggregateInput = {
@@ -529,6 +599,9 @@ export type TestAttemptMaxOrderByAggregateInput = {
   canResume?: Prisma.SortOrder
   needsResume?: Prisma.SortOrder
   resumeRequestedAt?: Prisma.SortOrder
+  elapsedSeconds?: Prisma.SortOrder
+  remainingTime?: Prisma.SortOrder
+  lastSyncAt?: Prisma.SortOrder
 }
 
 export type TestAttemptMinOrderByAggregateInput = {
@@ -545,11 +618,16 @@ export type TestAttemptMinOrderByAggregateInput = {
   canResume?: Prisma.SortOrder
   needsResume?: Prisma.SortOrder
   resumeRequestedAt?: Prisma.SortOrder
+  elapsedSeconds?: Prisma.SortOrder
+  remainingTime?: Prisma.SortOrder
+  lastSyncAt?: Prisma.SortOrder
 }
 
 export type TestAttemptSumOrderByAggregateInput = {
   totalMarks?: Prisma.SortOrder
   warningCount?: Prisma.SortOrder
+  elapsedSeconds?: Prisma.SortOrder
+  remainingTime?: Prisma.SortOrder
 }
 
 export type TestAttemptScalarRelationFilter = {
@@ -667,6 +745,9 @@ export type TestAttemptCreateWithoutStudentInput = {
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
+  elapsedSeconds?: number
+  remainingTime?: number | null
+  lastSyncAt?: Date | string | null
   answers?: Prisma.AnswerCreateNestedManyWithoutAttemptInput
   test: Prisma.TestCreateNestedOneWithoutAttemptsInput
 }
@@ -684,6 +765,9 @@ export type TestAttemptUncheckedCreateWithoutStudentInput = {
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
+  elapsedSeconds?: number
+  remainingTime?: number | null
+  lastSyncAt?: Date | string | null
   answers?: Prisma.AnswerUncheckedCreateNestedManyWithoutAttemptInput
 }
 
@@ -730,6 +814,9 @@ export type TestAttemptScalarWhereInput = {
   canResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
   needsResume?: Prisma.BoolFilter<"TestAttempt"> | boolean
   resumeRequestedAt?: Prisma.DateTimeNullableFilter<"TestAttempt"> | Date | string | null
+  elapsedSeconds?: Prisma.IntFilter<"TestAttempt"> | number
+  remainingTime?: Prisma.IntNullableFilter<"TestAttempt"> | number | null
+  lastSyncAt?: Prisma.DateTimeNullableFilter<"TestAttempt"> | Date | string | null
 }
 
 export type TestAttemptCreateWithoutTestInput = {
@@ -744,6 +831,9 @@ export type TestAttemptCreateWithoutTestInput = {
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
+  elapsedSeconds?: number
+  remainingTime?: number | null
+  lastSyncAt?: Date | string | null
   answers?: Prisma.AnswerCreateNestedManyWithoutAttemptInput
   student?: Prisma.StudentCreateNestedOneWithoutAttemptsInput
 }
@@ -761,6 +851,9 @@ export type TestAttemptUncheckedCreateWithoutTestInput = {
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
+  elapsedSeconds?: number
+  remainingTime?: number | null
+  lastSyncAt?: Date | string | null
   answers?: Prisma.AnswerUncheckedCreateNestedManyWithoutAttemptInput
 }
 
@@ -802,6 +895,9 @@ export type TestAttemptCreateWithoutAnswersInput = {
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
+  elapsedSeconds?: number
+  remainingTime?: number | null
+  lastSyncAt?: Date | string | null
   test: Prisma.TestCreateNestedOneWithoutAttemptsInput
   student?: Prisma.StudentCreateNestedOneWithoutAttemptsInput
 }
@@ -820,6 +916,9 @@ export type TestAttemptUncheckedCreateWithoutAnswersInput = {
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
+  elapsedSeconds?: number
+  remainingTime?: number | null
+  lastSyncAt?: Date | string | null
 }
 
 export type TestAttemptCreateOrConnectWithoutAnswersInput = {
@@ -850,6 +949,9 @@ export type TestAttemptUpdateWithoutAnswersInput = {
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  elapsedSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  remainingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   test?: Prisma.TestUpdateOneRequiredWithoutAttemptsNestedInput
   student?: Prisma.StudentUpdateOneWithoutAttemptsNestedInput
 }
@@ -868,6 +970,9 @@ export type TestAttemptUncheckedUpdateWithoutAnswersInput = {
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  elapsedSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  remainingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type TestAttemptCreateManyStudentInput = {
@@ -883,6 +988,9 @@ export type TestAttemptCreateManyStudentInput = {
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
+  elapsedSeconds?: number
+  remainingTime?: number | null
+  lastSyncAt?: Date | string | null
 }
 
 export type TestAttemptUpdateWithoutStudentInput = {
@@ -897,6 +1005,9 @@ export type TestAttemptUpdateWithoutStudentInput = {
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  elapsedSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  remainingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   answers?: Prisma.AnswerUpdateManyWithoutAttemptNestedInput
   test?: Prisma.TestUpdateOneRequiredWithoutAttemptsNestedInput
 }
@@ -914,6 +1025,9 @@ export type TestAttemptUncheckedUpdateWithoutStudentInput = {
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  elapsedSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  remainingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   answers?: Prisma.AnswerUncheckedUpdateManyWithoutAttemptNestedInput
 }
 
@@ -930,6 +1044,9 @@ export type TestAttemptUncheckedUpdateManyWithoutStudentInput = {
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  elapsedSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  remainingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type TestAttemptCreateManyTestInput = {
@@ -945,6 +1062,9 @@ export type TestAttemptCreateManyTestInput = {
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: Date | string | null
+  elapsedSeconds?: number
+  remainingTime?: number | null
+  lastSyncAt?: Date | string | null
 }
 
 export type TestAttemptUpdateWithoutTestInput = {
@@ -959,6 +1079,9 @@ export type TestAttemptUpdateWithoutTestInput = {
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  elapsedSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  remainingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   answers?: Prisma.AnswerUpdateManyWithoutAttemptNestedInput
   student?: Prisma.StudentUpdateOneWithoutAttemptsNestedInput
 }
@@ -976,6 +1099,9 @@ export type TestAttemptUncheckedUpdateWithoutTestInput = {
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  elapsedSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  remainingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   answers?: Prisma.AnswerUncheckedUpdateManyWithoutAttemptNestedInput
 }
 
@@ -992,6 +1118,9 @@ export type TestAttemptUncheckedUpdateManyWithoutTestInput = {
   canResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   needsResume?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resumeRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  elapsedSeconds?: Prisma.IntFieldUpdateOperationsInput | number
+  remainingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastSyncAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -1039,6 +1168,9 @@ export type TestAttemptSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: boolean
+  elapsedSeconds?: boolean
+  remainingTime?: boolean
+  lastSyncAt?: boolean
   answers?: boolean | Prisma.TestAttempt$answersArgs<ExtArgs>
   test?: boolean | Prisma.TestDefaultArgs<ExtArgs>
   student?: boolean | Prisma.TestAttempt$studentArgs<ExtArgs>
@@ -1059,6 +1191,9 @@ export type TestAttemptSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: boolean
+  elapsedSeconds?: boolean
+  remainingTime?: boolean
+  lastSyncAt?: boolean
   test?: boolean | Prisma.TestDefaultArgs<ExtArgs>
   student?: boolean | Prisma.TestAttempt$studentArgs<ExtArgs>
 }, ExtArgs["result"]["testAttempt"]>
@@ -1077,6 +1212,9 @@ export type TestAttemptSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: boolean
+  elapsedSeconds?: boolean
+  remainingTime?: boolean
+  lastSyncAt?: boolean
   test?: boolean | Prisma.TestDefaultArgs<ExtArgs>
   student?: boolean | Prisma.TestAttempt$studentArgs<ExtArgs>
 }, ExtArgs["result"]["testAttempt"]>
@@ -1095,9 +1233,12 @@ export type TestAttemptSelectScalar = {
   canResume?: boolean
   needsResume?: boolean
   resumeRequestedAt?: boolean
+  elapsedSeconds?: boolean
+  remainingTime?: boolean
+  lastSyncAt?: boolean
 }
 
-export type TestAttemptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "candidateName" | "candidateImage" | "startTime" | "endTime" | "totalMarks" | "isCompleted" | "warningCount" | "testId" | "studentId" | "canResume" | "needsResume" | "resumeRequestedAt", ExtArgs["result"]["testAttempt"]>
+export type TestAttemptOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "candidateName" | "candidateImage" | "startTime" | "endTime" | "totalMarks" | "isCompleted" | "warningCount" | "testId" | "studentId" | "canResume" | "needsResume" | "resumeRequestedAt" | "elapsedSeconds" | "remainingTime" | "lastSyncAt", ExtArgs["result"]["testAttempt"]>
 export type TestAttemptInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   answers?: boolean | Prisma.TestAttempt$answersArgs<ExtArgs>
   test?: boolean | Prisma.TestDefaultArgs<ExtArgs>
@@ -1134,6 +1275,9 @@ export type $TestAttemptPayload<ExtArgs extends runtime.Types.Extensions.Interna
     canResume: boolean
     needsResume: boolean
     resumeRequestedAt: Date | null
+    elapsedSeconds: number
+    remainingTime: number | null
+    lastSyncAt: Date | null
   }, ExtArgs["result"]["testAttempt"]>
   composites: {}
 }
@@ -1573,6 +1717,9 @@ export interface TestAttemptFieldRefs {
   readonly canResume: Prisma.FieldRef<"TestAttempt", 'Boolean'>
   readonly needsResume: Prisma.FieldRef<"TestAttempt", 'Boolean'>
   readonly resumeRequestedAt: Prisma.FieldRef<"TestAttempt", 'DateTime'>
+  readonly elapsedSeconds: Prisma.FieldRef<"TestAttempt", 'Int'>
+  readonly remainingTime: Prisma.FieldRef<"TestAttempt", 'Int'>
+  readonly lastSyncAt: Prisma.FieldRef<"TestAttempt", 'DateTime'>
 }
     
 

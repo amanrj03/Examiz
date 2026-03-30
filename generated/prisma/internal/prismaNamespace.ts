@@ -1230,7 +1230,10 @@ export const TestAttemptScalarFieldEnum = {
   studentId: 'studentId',
   canResume: 'canResume',
   needsResume: 'needsResume',
-  resumeRequestedAt: 'resumeRequestedAt'
+  resumeRequestedAt: 'resumeRequestedAt',
+  elapsedSeconds: 'elapsedSeconds',
+  remainingTime: 'remainingTime',
+  lastSyncAt: 'lastSyncAt'
 } as const
 
 export type TestAttemptScalarFieldEnum = (typeof TestAttemptScalarFieldEnum)[keyof typeof TestAttemptScalarFieldEnum]

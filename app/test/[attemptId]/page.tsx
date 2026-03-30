@@ -15,6 +15,7 @@ import SubmitConfirmationModal from '../../../components/SubmitConfirmationModal
 import Modal from '../../../components/Modal';
 import WarningModal from '../../../components/WarningModal';
 import SectionInstructionModal from '../../../components/SectionInstructionModal';
+import TestStatusBar from '../../../components/TestStatusBar';
 
 export default function TestWindow() {
   const { attemptId } = useParams<{ attemptId: string }>();
@@ -89,7 +90,10 @@ export default function TestWindow() {
     setTimeout(() => handleAutoSubmit(), 1000);
   }, [handleAutoSubmit]);
 
-  const { formattedTime, start: startTimer, reset: resetTimer } = useTimer(0, handleTimeUp);
+  const { timeLeft, formattedTime, start: startTimer, reset: resetTimer } = useTimer(0, handleTimeUp);
+
+  // Keep timeLeftRef in sync so the 60s interval always saves the current value
+  useEffect(() => { timeLeftRef.current = timeLeft; }, [timeLeft]);
 
   const { enterFullscreen, warningCount, showWarningModal, handleWarningOk, handleWarningTimeout } = useFullscreen(
     async (count) => { try { await attemptAPI.updateWarning({ attemptId }); } catch {} },
@@ -115,6 +119,21 @@ export default function TestWindow() {
     } catch {}
   }, [attemptId, answers]);
 
+  // Keep a ref always pointing to latest answers so the setInterval never captures a stale closure
+  const answersRef = useRef(answers);
+  useEffect(() => { answersRef.current = answers; }, [answers]);
+
+  // Keep a ref to timeLeft so the 60s interval always saves the current value
+  const timeLeftRef = useRef(0);
+
+  const syncAnswersLatest = useCallback(async () => {
+    try {
+      await attemptAPI.syncAnswers({ attemptId, answers: Object.entries(answersRef.current).map(([qId, a]) => ({ questionId: qId, ...a })) });
+    } catch {}
+  }, [attemptId]);
+
+  const remainingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   useEffect(() => {
     const fetchAttempt = async () => {
       try {
@@ -128,11 +147,23 @@ export default function TestWindow() {
         if (firstQ && (!init[firstQ.id] || init[firstQ.id].status === 'NOT_VISITED')) {
           setTimeout(() => updateAnswer(firstQ.id, { status: 'NOT_ANSWERED' }), 100);
         }
-        const duration = Math.max(data.test.duration * 60, 10);
-        resetTimer(duration);
+
+        // Use saved remainingTime if exists (reconnect), else use full duration (first start)
+        const totalSeconds = data.test.duration * 60;
+        const startSeconds = (data.remainingTime != null) ? data.remainingTime : totalSeconds;
+        timeLeftRef.current = startSeconds;
+        resetTimer(startSeconds);
+
         setLoading(false);
         setTimeout(() => { startTimer(); if (firstQ) startQuestionTimer(firstQ.id); }, 1000);
-        syncIntervalRef.current = setInterval(() => syncAnswers(), 15000);
+
+        // Save answers every 15s
+        syncIntervalRef.current = setInterval(() => syncAnswersLatest(), 15000);
+
+        // Save remaining time every 60s
+        remainingIntervalRef.current = setInterval(() => {
+          attemptAPI.syncRemaining({ attemptId, remainingTime: timeLeftRef.current }).catch(() => {});
+        }, 60000);
       } catch {
         setErrorModal({ show: true, title: 'Failed to Load Test', message: 'Unable to load the test. Redirecting to dashboard.' });
         setTimeout(() => router.push('/student'), 3000);
@@ -144,14 +175,15 @@ export default function TestWindow() {
 
     const handleBeforeUnload = () => {
       if (attemptId && !submittingRef.current) {
-        const blob = new Blob([JSON.stringify({ attemptId })], { type: 'application/json' });
-        navigator.sendBeacon('/api/attempts/request-resume', blob);
+        // Save remaining time immediately on close
+        navigator.sendBeacon('/api/attempts/sync-remaining', JSON.stringify({ attemptId, remainingTime: timeLeftRef.current }));
       }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
       if (syncIntervalRef.current) clearInterval(syncIntervalRef.current);
+      if (remainingIntervalRef.current) clearInterval(remainingIntervalRef.current);
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [attemptId]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -304,12 +336,13 @@ export default function TestWindow() {
           )}
         </div>
 
-        <div className="w-80 bg-gray-50 border-l flex-shrink-0 overflow-y-auto scrollbar-hide">
-          <div className="p-4">
+        <div className="w-80 bg-gray-50 border-l flex-shrink-0 overflow-y-auto scrollbar-hide flex flex-col">
+          <div className="p-4 flex-1">
             {attempt?.test?.sections && (
               <QuestionPalette sections={attempt.test.sections} currentSection={currentSection} currentQuestion={currentQuestion} answers={answers} onQuestionClick={navigateToQuestion} onShowInstructions={() => setShowInstructionModal(true)} />
             )}
           </div>
+          <TestStatusBar />
         </div>
       </div>
 

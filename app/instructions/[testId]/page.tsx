@@ -4,13 +4,16 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { testAPI, attemptAPI } from '../../../services/api';
 import Modal from '../../../components/Modal';
+import axios from 'axios';
 
-function useTimeWindow(test: any) {
+function useTimeWindow(test: any, hasExistingAttempt: boolean) {
   const [status, setStatus] = useState<'loading' | 'before' | 'open' | 'closed'>('loading');
   const [countdown, setCountdown] = useState('');
 
   const compute = useCallback(() => {
     if (!test) return;
+    // If student has an existing attempt (resuming), always show as open
+    if (hasExistingAttempt) { setStatus('open'); return; }
     const now = new Date();
     const start = test.startTime ? new Date(test.startTime) : null;
     const end   = test.endTime   ? new Date(test.endTime)   : null;
@@ -44,12 +47,13 @@ export default function InstructionPage() {
   const [test, setTest] = useState<any>(null);
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [hasExistingAttempt, setHasExistingAttempt] = useState(false);
   const [errorModal, setErrorModal] = useState({ show: false, title: '', message: '', redirectToDashboard: false });
 
   const candidateName = user?.role === 'student' ? user.name : '';
   const candidateImage = user?.role === 'student' ? (user.profilePic || '') : '';
 
-  const { status, countdown } = useTimeWindow(test);
+  const { status, countdown } = useTimeWindow(test, hasExistingAttempt);
 
   useEffect(() => { fetchTest(); }, [testId]);
 
@@ -57,6 +61,14 @@ export default function InstructionPage() {
     try {
       const res = await testAPI.getTestById(testId);
       setTest(res.data);
+      // Check if student has an existing incomplete attempt (for resume bypass)
+      if (user?.role === 'student') {
+        try {
+          const attRes = await axios.get('/api/attempts/user/me');
+          const incomplete = attRes.data.find((a: any) => a.testId === testId && !a.isCompleted);
+          setHasExistingAttempt(!!incomplete);
+        } catch {}
+      }
     } catch {
       setErrorModal({ show: true, title: 'Test Not Found', message: 'Test not found. Redirecting to dashboard.', redirectToDashboard: true });
       setTimeout(() => router.push('/student'), 3000);
@@ -71,7 +83,7 @@ export default function InstructionPage() {
       router.push(`/test/${res.data.id}`);
     } catch (error: any) {
       if (error.response?.status === 403 && error.response?.data?.needsResume) {
-        setErrorModal({ show: true, title: 'Resume Permission Required', message: 'You previously closed the test. The test creator needs to approve your resume request.', redirectToDashboard: true });
+        setErrorModal({ show: true, title: 'Resume Permission Required', message: 'Your test was interrupted. Please contact your institute to get resume permission before you can continue.', redirectToDashboard: true });
       } else if (error.response?.status === 400) {
         setErrorModal({ show: true, title: 'Cannot Start Test', message: error.response.data.error + ' Redirecting to dashboard.', redirectToDashboard: true });
         setTimeout(() => router.push('/student'), 3000);

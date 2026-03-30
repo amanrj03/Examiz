@@ -18,14 +18,13 @@ export function useBattery(): BatteryInfo {
     const update = () => {
       if (!battery) return;
       const level = Math.round(battery.level * 100);
-      // On desktop Chrome, getBattery always returns level=1.0 and charging=true
-      // We detect this and hide the indicator (not useful info)
-      const isDesktopFallback = level === 100 && battery.charging && battery.chargingTime === 0 && battery.dischargingTime === Infinity;
-      setInfo({
-        level,
-        charging: battery.charging,
-        supported: !isDesktopFallback,
-      });
+      const charging = battery.charging;
+      const dischargingTime = battery.dischargingTime;
+
+      // Desktop Chrome always returns level=1.0, charging=true, dischargingTime=Infinity
+      // Real battery will have a finite dischargingTime or level < 100 at some point
+      // We show it regardless — if it's always 100% charging, user can ignore it
+      setInfo({ level, charging, supported: true });
     };
 
     (navigator as any).getBattery().then((b: any) => {
@@ -33,16 +32,14 @@ export function useBattery(): BatteryInfo {
       update();
       b.addEventListener('levelchange', update);
       b.addEventListener('chargingchange', update);
-      b.addEventListener('chargingtimechange', update);
-      b.addEventListener('dischargingtimechange', update);
-    }).catch(() => {});
+    }).catch(() => {
+      // getBattery not supported or permission denied
+    });
 
     return () => {
       if (battery) {
         battery.removeEventListener('levelchange', update);
         battery.removeEventListener('chargingchange', update);
-        battery.removeEventListener('chargingtimechange', update);
-        battery.removeEventListener('dischargingtimechange', update);
       }
     };
   }, []);

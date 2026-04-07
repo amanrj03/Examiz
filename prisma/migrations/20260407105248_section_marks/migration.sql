@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "sections" ADD COLUMN     "marks" INTEGER NOT NULL DEFAULT 4,
+ADD COLUMN     "negativeMarks" INTEGER NOT NULL DEFAULT -1;

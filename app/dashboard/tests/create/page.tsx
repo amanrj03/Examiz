@@ -108,7 +108,8 @@ function CreateTestForm() {
       setEnableGraphicalAnalysis(t.enableGraphicalAnalysis ?? true);
       setSections(t.sections.map((s: any) => ({
         name: s.name, questionType: s.questionType,
-        marks: s.questions[0]?.marks ?? 4, negativeMarks: s.questions[0]?.negativeMarks ?? -1,
+        marks: s.marks ?? s.questions[0]?.marks ?? 4,
+        negativeMarks: s.negativeMarks ?? s.questions[0]?.negativeMarks ?? -1,
         isExpanded: false,
         questions: s.questions.map((q: any, i: number) => ({
           id: q.id || `q-${Date.now()}-${i}`,

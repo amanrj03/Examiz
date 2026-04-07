@@ -108,10 +108,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             ) {
               currentSection = await tx.section.update({
                 where: { id: existingSection.id },
-                data: { name: newSection.name, questionType: newSection.questionType, order: si },
+                data: { name: newSection.name, questionType: newSection.questionType, marks: newSection.marks ?? 4, negativeMarks: newSection.negativeMarks ?? -1, order: si },
               });
             } else {
-              currentSection = existingSection;
+              // Always update marks/negativeMarks even if name/type unchanged
+              currentSection = await tx.section.update({
+                where: { id: existingSection.id },
+                data: { marks: newSection.marks ?? 4, negativeMarks: newSection.negativeMarks ?? -1, order: si },
+              });
             }
           } else {
             currentSection = await tx.section.create({
@@ -119,6 +123,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
                 name: newSection.name,
                 questionType: newSection.questionType,
                 isIntegerType: false,
+                marks: newSection.marks ?? 4,
+                negativeMarks: newSection.negativeMarks ?? -1,
                 order: si,
                 testId: id,
               },

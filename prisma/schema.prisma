@@ -108,6 +108,8 @@ model Section {
   name          String
   questionType  QuestionType
   isIntegerType Boolean      @default(false)
+  marks         Int          @default(4)
+  negativeMarks Int          @default(-1)
   order         Int
   testId        String
   questions     Question[]

@@ -92,6 +92,8 @@ export async function POST(req: NextRequest) {
                 name: section.name,
                 questionType: section.questionType as never,
                 isIntegerType: false,
+                marks: section.marks ?? 4,
+                negativeMarks: section.negativeMarks ?? -1,
                 order: sectionIndex,
                 questions: {
                   create: await Promise.all(

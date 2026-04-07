@@ -36,6 +36,11 @@ export default function NumericalValueQuestion({ question, answer, onAnswerChang
   useEffect(() => { setInputValue(answer?.integerAnswer?.toString() || ''); }, [question.id, answer?.integerAnswer]);
 
   const handleChange = (value: string) => {
+    // Allow intermediate typing states, but hard-block more than 2 decimal places
+    if (value.includes('.')) {
+      const decPart = value.split('.')[1];
+      if (decPart && decPart.length > 2) return; // block 3+ dp
+    }
     if (value === '' || value === '-' || value === '.' || value === '-.' || DECIMAL_RE.test(value)) {
       setInputValue(value);
       const parsed = parseFloat(value);
@@ -46,9 +51,18 @@ export default function NumericalValueQuestion({ question, answer, onAnswerChang
   };
 
   const handleKeypad = (val: string) => {
-    if (val === 'C') { setInputValue(''); onAnswerChange({ integerAnswer: null, status: 'NOT_ANSWERED' }); }
-    else if (val === 'Backspace') handleChange(inputValue.slice(0, -1));
-    else handleChange(inputValue + val);
+    if (val === 'C') { setInputValue(''); onAnswerChange({ integerAnswer: null, status: 'NOT_ANSWERED' }); return; }
+    if (val === 'Backspace') { handleChange(inputValue.slice(0, -1)); return; }
+    // Block '.' if already has one, or if decimal part already has 2 digits
+    if (val === '.') {
+      if (inputValue.includes('.')) return;
+    }
+    // Block digit if decimal part already has 2 digits
+    if (/^\d$/.test(val) && inputValue.includes('.')) {
+      const decPart = inputValue.split('.')[1] || '';
+      if (decPart.length >= 2) return;
+    }
+    handleChange(inputValue + val);
   };
 
   return (

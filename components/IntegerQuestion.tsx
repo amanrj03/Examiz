@@ -19,7 +19,8 @@ export default function IntegerQuestion({ question, answer, onAnswerChange, ques
   useEffect(() => { setInputValue(answer?.integerAnswer?.toString() || ''); }, [question.id, answer?.integerAnswer]);
 
   const handleChange = (value: string) => {
-    // Only allow whole integers (positive, negative, zero)
+    // Strictly block any decimal input — integers only
+    if (value.includes('.') || value.includes(',')) return;
     if (value === '' || value === '-' || /^-?\d+$/.test(value)) {
       setInputValue(value);
       const isValid = value !== '' && value !== '-';

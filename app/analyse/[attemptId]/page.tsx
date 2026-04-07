@@ -95,6 +95,8 @@ function QuestionCarousel({ questions, currentSection, getAnswerForQuestion }: {
     }
     if (qType === 'INTEGER')
       return (answer?.integerAnswer !== null && answer?.integerAnswer !== undefined) ? answer.integerAnswer.toString() : 'Not attempted';
+    if (qType === 'NUMERICAL_VALUE')
+      return (answer?.integerAnswer !== null && answer?.integerAnswer !== undefined) ? Number(answer.integerAnswer).toFixed(2) : 'Not attempted';
     return 'Not attempted';
   };
 
@@ -111,6 +113,14 @@ function QuestionCarousel({ questions, currentSection, getAnswerForQuestion }: {
     }
     if (qType === 'INTEGER')
       return (active?.correctInteger !== null && active?.correctInteger !== undefined) ? active.correctInteger.toString() : 'N/A';
+    if (qType === 'NUMERICAL_VALUE') {
+      if (active?.integerAnswerType === 'RANGE') {
+        const min = active?.correctIntegerMin != null ? Number(active.correctIntegerMin).toFixed(2) : '?';
+        const max = active?.correctIntegerMax != null ? Number(active.correctIntegerMax).toFixed(2) : '?';
+        return `${min} – ${max}`;
+      }
+      return active?.correctInteger != null ? Number(active.correctInteger).toFixed(2) : 'N/A';
+    }
     return 'N/A';
   };
 

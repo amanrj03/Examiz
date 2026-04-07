@@ -356,6 +356,7 @@ export default function TestList({ filter, title, subtitle }: Props) {
             <div className="overflow-y-auto px-6 py-4 space-y-8">
               {(answerKeyTarget as any).sections?.map((section: any, si: number) => {
                 const isInteger = section.questionType === 'INTEGER';
+                const isNumerical = section.questionType === 'NUMERICAL_VALUE';
                 const isMultiple = section.questionType === 'MULTIPLE_CORRECT';
                 return (
                   <div key={section.id}>
@@ -377,11 +378,23 @@ export default function TestList({ filter, title, subtitle }: Props) {
                             <td className="border border-gray-300 px-2 py-1.5 font-semibold bg-gray-50 text-gray-600 text-xs">A.</td>
                             {section.questions.map((q: any) => {
                               let answer = '—';
-                              if (isInteger) answer = q.correctInteger?.toString() ?? '—';
-                              else if (isMultiple) answer = q.correctOptions ? q.correctOptions.split(',').join(',') : '—';
-                              else answer = q.correctOption ?? '—';
+                              if (isInteger) {
+                                answer = q.correctInteger != null ? String(q.correctInteger) : '—';
+                              } else if (isNumerical) {
+                                if (q.integerAnswerType === 'RANGE') {
+                                  const min = q.correctIntegerMin != null ? Number(q.correctIntegerMin).toFixed(2) : '?';
+                                  const max = q.correctIntegerMax != null ? Number(q.correctIntegerMax).toFixed(2) : '?';
+                                  answer = `${min} – ${max}`;
+                                } else {
+                                  answer = q.correctInteger != null ? Number(q.correctInteger).toFixed(2) : '—';
+                                }
+                              } else if (isMultiple) {
+                                answer = q.correctOptions ? q.correctOptions.split(',').join(', ') : '—';
+                              } else {
+                                answer = q.correctOption ?? '—';
+                              }
                               return (
-                                <td key={q.id} className="border border-gray-300 px-2 py-1.5 font-semibold text-gray-800">
+                                <td key={q.id} className="border border-gray-300 px-2 py-1.5 font-semibold text-gray-800 whitespace-nowrap">
                                   {answer}
                                 </td>
                               );

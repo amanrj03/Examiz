@@ -222,8 +222,13 @@ function CreateTestForm() {
     try {
       const resolved = await uploadImagesQueue(sections);
       const fd = buildFormData(true, resolved);
-      if (editingTest) { await testAPI.updateTest(editingTest.id, fd, onProgress); }
-      else { await testAPI.saveDraft(fd, onProgress); }
+      if (editingTest) {
+        await testAPI.updateTest(editingTest.id, fd, onProgress);
+      } else {
+        const res = await testAPI.saveDraft(fd, onProgress);
+        // Store the created draft so subsequent saves update instead of creating new ones
+        setEditingTest(res.data);
+      }
       setModal({ show: true, title: 'Saved', message: 'Draft saved successfully!', type: 'success' });
     } catch (error: any) { setModal({ show: true, title: 'Error', message: error.message || 'Failed to save draft.', type: 'error' }); }
     finally { setSaveDraftLoading(false); setLoading(false); setUploadProgress(0); }
@@ -381,12 +386,12 @@ function CreateTestForm() {
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Marks (Correct)</label>
-                  <input type="number" value={section.marks ?? 4} onChange={(e) => updateSection(si, 'marks', parseInt(e.target.value) || 0)}
+                  <input type="number" value={section.marks ?? 4} onChange={(e) => updateSection(si, 'marks', parseFloat(e.target.value) || 0)}
                     className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Negative Marks</label>
-                  <input type="number" value={section.negativeMarks ?? -1} onChange={(e) => updateSection(si, 'negativeMarks', parseInt(e.target.value) || 0)}
+                  <input type="number" value={section.negativeMarks ?? -1} onChange={(e) => updateSection(si, 'negativeMarks', e.target.value === '' ? 0 : parseFloat(e.target.value))}
                     className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
                 </div>
               </div>

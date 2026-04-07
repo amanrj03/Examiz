@@ -90,6 +90,19 @@ export default function PreviewTest() {
                   <div className="text-sm text-green-700 mb-2">Correct Answer:</div>
                   <div className="text-2xl font-bold text-green-800">{currentQ.correctInteger}</div>
                 </div>
+              ) : currentSectionObj.questionType === 'NUMERICAL_VALUE' ? (
+                <div className="mb-6 p-4 bg-green-50 border-2 border-green-500 rounded-lg">
+                  <div className="text-sm text-green-700 mb-2">Correct Answer:</div>
+                  {currentQ.integerAnswerType === 'RANGE' ? (
+                    <div className="text-2xl font-bold text-green-800">
+                      {Number(currentQ.correctIntegerMin).toFixed(2)} – {Number(currentQ.correctIntegerMax).toFixed(2)}
+                    </div>
+                  ) : (
+                    <div className="text-2xl font-bold text-green-800">
+                      {currentQ.correctInteger != null ? Number(currentQ.correctInteger).toFixed(2) : '—'}
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div className="space-y-3 mb-6">
                   {['A', 'B', 'C', 'D'].map((opt) => {

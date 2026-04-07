@@ -75,7 +75,7 @@
 ```bash
 # Clone the repository
 git clone https://github.com/amanrj03/Qube.git
-cd Qube
+cd Examiz
 
 # Install dependencies
 npm install

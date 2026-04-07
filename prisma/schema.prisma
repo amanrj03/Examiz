@@ -199,6 +199,7 @@ enum QuestionType {
   INTEGER
   MULTIPLE_CORRECT
   MATRIX_MATCH
+  NUMERICAL_VALUE
 }
 
 enum AnswerStatus {

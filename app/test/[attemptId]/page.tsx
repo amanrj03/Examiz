@@ -10,6 +10,7 @@ import { useTimeTracking } from '../../../hooks/useTimeTracking';
 import QuestionPalette from '../../../components/QuestionPalette';
 import MCQQuestion from '../../../components/MCQQuestion';
 import IntegerQuestion from '../../../components/IntegerQuestion';
+import NumericalValueQuestion from '../../../components/NumericalValueQuestion';
 import MultipleCorrectQuestion from '../../../components/MultipleCorrectQuestion';
 import SubmitConfirmationModal from '../../../components/SubmitConfirmationModal';
 import Modal from '../../../components/Modal';
@@ -315,6 +316,10 @@ export default function TestWindow() {
                     <MCQQuestion question={currentQ} answer={answers[currentQ.id]} onAnswerChange={(d) => updateAnswer(currentQ.id, d)} questionNumber={currentQuestion + 1} sectionType={currentSectionObj.questionType} marks={currentQ.marks} negativeMarks={currentQ.negativeMarks} />
                   ) : currentSectionObj.questionType === 'MULTIPLE_CORRECT' ? (
                     <MultipleCorrectQuestion question={currentQ} answer={answers[currentQ.id]} onAnswerChange={(d) => updateAnswer(currentQ.id, d)} questionNumber={currentQuestion + 1} marks={currentQ.marks} negativeMarks={currentQ.negativeMarks} />
+                  ) : currentSectionObj.questionType === 'INTEGER' ? (
+                    <IntegerQuestion question={currentQ} answer={answers[currentQ.id]} onAnswerChange={(d) => updateAnswer(currentQ.id, d)} questionNumber={currentQuestion + 1} marks={currentQ.marks} negativeMarks={currentQ.negativeMarks} />
+                  ) : currentSectionObj.questionType === 'NUMERICAL_VALUE' ? (
+                    <NumericalValueQuestion question={currentQ} answer={answers[currentQ.id]} onAnswerChange={(d) => updateAnswer(currentQ.id, d)} questionNumber={currentQuestion + 1} marks={currentQ.marks} negativeMarks={currentQ.negativeMarks} />
                   ) : (
                     <IntegerQuestion question={currentQ} answer={answers[currentQ.id]} onAnswerChange={(d) => updateAnswer(currentQ.id, d)} questionNumber={currentQuestion + 1} marks={currentQ.marks} negativeMarks={currentQ.negativeMarks} />
                   )}

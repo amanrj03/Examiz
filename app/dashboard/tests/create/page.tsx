@@ -246,11 +246,14 @@ function CreateTestForm() {
         if ((s.questionType === 'SINGLE_CORRECT' || s.questionType === 'MATRIX_MATCH') && !q.correctOption) { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name} is missing the correct option.`, type: 'warning' }); return; }
         if (s.questionType === 'MULTIPLE_CORRECT' && (!q.correctOptions || q.correctOptions.length === 0)) { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name} is missing correct options.`, type: 'warning' }); return; }
         if (s.questionType === 'INTEGER') {
+          if (!q.correctInteger && q.correctInteger !== '0') { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name} is missing the integer answer.`, type: 'warning' }); return; }
+        }
+        if (s.questionType === 'NUMERICAL_VALUE') {
           if (q.integerAnswerType === 'RANGE') {
             if (q.correctIntegerMin === '' || q.correctIntegerMax === '') { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name} is missing the range answer (min/max).`, type: 'warning' }); return; }
             if (parseFloat(q.correctIntegerMin) > parseFloat(q.correctIntegerMax)) { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name}: min value cannot be greater than max.`, type: 'warning' }); return; }
           } else {
-            if (!q.correctInteger && q.correctInteger !== '0') { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name} is missing the integer answer.`, type: 'warning' }); return; }
+            if (!q.correctInteger && q.correctInteger !== '0') { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name} is missing the numerical answer.`, type: 'warning' }); return; }
           }
         }
       }
@@ -382,6 +385,7 @@ function CreateTestForm() {
                     <option value="INTEGER">Integer Type</option>
                     <option value="MULTIPLE_CORRECT">Multiple Correct</option>
                     <option value="MATRIX_MATCH">Matrix Match</option>
+                    <option value="NUMERICAL_VALUE">Numerical Value</option>
                   </select>
                 </div>
                 <div>
@@ -457,6 +461,22 @@ function CreateTestForm() {
                             </div>
                           )}
                           {section.questionType === 'INTEGER' && (
+                            <div>
+                              <label className="block text-xs text-gray-500 mb-1">Correct Integer</label>
+                              <input
+                                type="text" inputMode="numeric"
+                                value={q.correctInteger}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  if (val === '' || val === '-' || /^-?\d+$/.test(val))
+                                    updateQuestion(si, qi, 'correctInteger', val);
+                                }}
+                                className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                placeholder="e.g. 42"
+                              />
+                            </div>
+                          )}
+                          {section.questionType === 'NUMERICAL_VALUE' && (
                             <div className="space-y-2">
                               <label className="block text-xs text-gray-500 mb-1">Answer Type</label>
                               <div className="flex gap-2 mb-2">

@@ -57,6 +57,13 @@ export async function POST(req: NextRequest) {
             marksAwarded = question.negativeMarks;
           }
         } else if (section?.questionType === 'INTEGER') {
+          // Integer: exact whole number match
+          if (question.correctInteger !== null && question.correctInteger !== undefined) {
+            if (answer.integerAnswer === question.correctInteger) { isCorrect = true; marksAwarded = question.marks; }
+            else if (answer.integerAnswer !== null && answer.integerAnswer !== undefined) { isCorrect = false; marksAwarded = question.negativeMarks; }
+          }
+        } else if (section?.questionType === 'NUMERICAL_VALUE') {
+          // Numerical Value: fixed or range, supports decimals
           const correct = checkIntegerAnswer(answer.integerAnswer, question);
           if (correct === true) { isCorrect = true; marksAwarded = question.marks; }
           else if (correct === false) { isCorrect = false; marksAwarded = question.negativeMarks; }

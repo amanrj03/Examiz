@@ -74,7 +74,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/amanrj03/Qube.git
+git clone https://github.com/amanrj03/Examiz.git
 cd Examiz
 
 # Install dependencies

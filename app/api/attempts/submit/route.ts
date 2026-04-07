@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { calculateMultipleCorrectMarks } from '@/lib/markingUtils';
+import { checkIntegerAnswer } from '@/lib/integerScoring';
 
 export async function POST(req: NextRequest) {
   try {
@@ -55,18 +56,10 @@ export async function POST(req: NextRequest) {
             isCorrect = false;
             marksAwarded = question.negativeMarks;
           }
-        } else if (
-          section?.questionType === 'INTEGER' &&
-          question.correctInteger !== null &&
-          question.correctInteger !== undefined
-        ) {
-          if (answer.integerAnswer === question.correctInteger) {
-            isCorrect = true;
-            marksAwarded = question.marks;
-          } else if (answer.integerAnswer !== null && answer.integerAnswer !== undefined) {
-            isCorrect = false;
-            marksAwarded = question.negativeMarks;
-          }
+        } else if (section?.questionType === 'INTEGER') {
+          const correct = checkIntegerAnswer(answer.integerAnswer, question);
+          if (correct === true) { isCorrect = true; marksAwarded = question.marks; }
+          else if (correct === false) { isCorrect = false; marksAwarded = question.negativeMarks; }
         }
       }
 
@@ -82,7 +75,7 @@ export async function POST(req: NextRequest) {
           : null,
         integerAnswer:
           answer.integerAnswer !== null && answer.integerAnswer !== undefined
-            ? parseInt(String(answer.integerAnswer))
+            ? parseFloat(String(answer.integerAnswer))
             : null,
         status: answer.status,
         isCorrect,

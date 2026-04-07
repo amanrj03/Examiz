@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
               : null,
             integerAnswer:
               answer.integerAnswer !== null && answer.integerAnswer !== undefined
-                ? parseInt(String(answer.integerAnswer))
+                ? parseFloat(String(answer.integerAnswer))
                 : null,
             status: answer.status as never,
           },

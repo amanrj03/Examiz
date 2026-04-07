@@ -170,7 +170,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
                   : newQuestion.correctOptions
                 : null,
               correctInteger: newQuestion.correctInteger
-                ? parseInt(newQuestion.correctInteger)
+                ? parseFloat(newQuestion.correctInteger)
+                : null,
+              integerAnswerType: newQuestion.integerAnswerType || 'FIXED',
+              correctIntegerMin: newQuestion.correctIntegerMin
+                ? parseFloat(newQuestion.correctIntegerMin)
+                : null,
+              correctIntegerMax: newQuestion.correctIntegerMax
+                ? parseFloat(newQuestion.correctIntegerMax)
                 : null,
               marks: newSection.marks ?? 4,
               negativeMarks: newSection.negativeMarks ?? -1,

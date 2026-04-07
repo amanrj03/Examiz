@@ -82,6 +82,9 @@ export async function POST(req: NextRequest) {
                     correctOption?: string;
                     correctOptions?: string[] | string;
                     correctInteger?: string;
+                    integerAnswerType?: string;
+                    correctIntegerMin?: string;
+                    correctIntegerMax?: string;
                   }[];
                 },
                 sectionIndex: number
@@ -131,7 +134,14 @@ export async function POST(req: NextRequest) {
                             : question.correctOptions
                           : null,
                         correctInteger: question.correctInteger
-                          ? parseInt(question.correctInteger)
+                          ? parseFloat(question.correctInteger)
+                          : null,
+                        integerAnswerType: question.integerAnswerType || 'FIXED',
+                        correctIntegerMin: question.correctIntegerMin
+                          ? parseFloat(question.correctIntegerMin)
+                          : null,
+                        correctIntegerMax: question.correctIntegerMax
+                          ? parseFloat(question.correctIntegerMax)
                           : null,
                         marks: section.marks ?? 4,
                         negativeMarks: section.negativeMarks ?? -1,

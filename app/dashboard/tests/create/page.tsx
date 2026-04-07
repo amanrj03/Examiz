@@ -6,7 +6,7 @@ import { detectMultipleSubjects } from '../../../../utils/subjectUtils';
 import Modal from '../../../../components/Modal';
 import BulkSelectionErrorModal from '../../../../components/BulkSelectionErrorModal';
 
-interface Question { id: string; questionImage: File | string | null; solutionImage: File | string | null; correctOption: string; correctOptions: string[]; correctInteger: string }
+interface Question { id: string; questionImage: File | string | null; solutionImage: File | string | null; correctOption: string; correctOptions: string[]; correctInteger: string; integerAnswerType: 'FIXED' | 'RANGE'; correctIntegerMin: string; correctIntegerMax: string }
 interface Section { name: string; questionType: string; marks: number; negativeMarks: number; questions: Question[]; isExpanded: boolean }
 
 let lastActiveImageInput: ((file: File) => void) | null = null;
@@ -116,6 +116,9 @@ function CreateTestForm() {
           correctOption: q.correctOption || 'A',
           correctOptions: q.correctOptions ? (typeof q.correctOptions === 'string' ? q.correctOptions.split(',') : q.correctOptions) : [],
           correctInteger: q.correctInteger?.toString() || '',
+          integerAnswerType: (q.integerAnswerType as 'FIXED' | 'RANGE') || 'FIXED',
+          correctIntegerMin: q.correctIntegerMin?.toString() || '',
+          correctIntegerMax: q.correctIntegerMax?.toString() || '',
         })),
       })));
     } catch { setModal({ show: true, title: 'Error', message: 'Failed to load test for editing.', type: 'error' }); }
@@ -128,7 +131,7 @@ function CreateTestForm() {
     if (sections.length <= 1) { setModal({ show: true, title: 'Cannot Delete', message: 'At least one section is required.', type: 'warning' }); return; }
     setSections(sections.filter((_, idx) => idx !== i));
   };
-  const addQuestion = (si: number) => { const s = [...sections]; s[si].questions.push({ id: `q-${Date.now()}-${Math.random()}`, questionImage: null, solutionImage: null, correctOption: 'A', correctOptions: [], correctInteger: '' }); setSections(s); };
+  const addQuestion = (si: number) => { const s = [...sections]; s[si].questions.push({ id: `q-${Date.now()}-${Math.random()}`, questionImage: null, solutionImage: null, correctOption: 'A', correctOptions: [], correctInteger: '', integerAnswerType: 'FIXED', correctIntegerMin: '', correctIntegerMax: '' }); setSections(s); };
   const updateQuestion = (si: number, qi: number, field: string, value: any) => setSections(sections.map((s, sIdx) => sIdx !== si ? s : { ...s, questions: s.questions.map((q, qIdx) => qIdx !== qi ? q : { ...q, [field]: value }) }));
   const deleteQuestion = (si: number, qi: number) => { const s = [...sections]; s[si].questions = s[si].questions.filter((_, i) => i !== qi); setSections(s); };
 
@@ -237,7 +240,14 @@ function CreateTestForm() {
         if (!q.solutionImage) { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name} is missing a solution image.`, type: 'warning' }); return; }
         if ((s.questionType === 'SINGLE_CORRECT' || s.questionType === 'MATRIX_MATCH') && !q.correctOption) { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name} is missing the correct option.`, type: 'warning' }); return; }
         if (s.questionType === 'MULTIPLE_CORRECT' && (!q.correctOptions || q.correctOptions.length === 0)) { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name} is missing correct options.`, type: 'warning' }); return; }
-        if (s.questionType === 'INTEGER' && !q.correctInteger && q.correctInteger !== '0') { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name} is missing the integer answer.`, type: 'warning' }); return; }
+        if (s.questionType === 'INTEGER') {
+          if (q.integerAnswerType === 'RANGE') {
+            if (q.correctIntegerMin === '' || q.correctIntegerMax === '') { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name} is missing the range answer (min/max).`, type: 'warning' }); return; }
+            if (parseFloat(q.correctIntegerMin) > parseFloat(q.correctIntegerMax)) { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name}: min value cannot be greater than max.`, type: 'warning' }); return; }
+          } else {
+            if (!q.correctInteger && q.correctInteger !== '0') { setModal({ show: true, title: 'Validation Error', message: `Q${qi + 1} in ${s.name} is missing the integer answer.`, type: 'warning' }); return; }
+          }
+        }
       }
     }
     setCreateTestLoading(true); setLoading(true);
@@ -442,22 +452,56 @@ function CreateTestForm() {
                             </div>
                           )}
                           {section.questionType === 'INTEGER' && (
-                            <div>
-                              <label className="block text-xs text-gray-500 mb-1">Correct Integer</label>
-                              <input
-                                type="text"
-                                inputMode="numeric"
-                                pattern="-?[0-9]*"
-                                value={q.correctInteger}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  if (val === '' || val === '-' || /^-?\d+$/.test(val)) {
-                                    updateQuestion(si, qi, 'correctInteger', val);
-                                  }
-                                }}
-                                className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                placeholder="e.g. 42"
-                              />
+                            <div className="space-y-2">
+                              <label className="block text-xs text-gray-500 mb-1">Answer Type</label>
+                              <div className="flex gap-2 mb-2">
+                                {(['FIXED', 'RANGE'] as const).map((t) => (
+                                  <button key={t} type="button"
+                                    onClick={() => updateQuestion(si, qi, 'integerAnswerType', t)}
+                                    className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition ${q.integerAnswerType === t ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                                    {t === 'FIXED' ? 'Fixed' : 'Range'}
+                                  </button>
+                                ))}
+                              </div>
+                              {q.integerAnswerType === 'FIXED' ? (
+                                <input
+                                  type="text" inputMode="decimal"
+                                  value={q.correctInteger}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (val === '' || val === '-' || val === '.' || val === '-.' || /^-?\d*\.?\d{0,2}$/.test(val))
+                                      updateQuestion(si, qi, 'correctInteger', val);
+                                  }}
+                                  className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  placeholder="e.g. 42 or 1.41"
+                                />
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="text" inputMode="decimal"
+                                    value={q.correctIntegerMin}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      if (val === '' || val === '-' || val === '.' || val === '-.' || /^-?\d*\.?\d{0,2}$/.test(val))
+                                        updateQuestion(si, qi, 'correctIntegerMin', val);
+                                    }}
+                                    className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    placeholder="Min e.g. 1.40"
+                                  />
+                                  <span className="text-gray-400 text-xs shrink-0">to</span>
+                                  <input
+                                    type="text" inputMode="decimal"
+                                    value={q.correctIntegerMax}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      if (val === '' || val === '-' || val === '.' || val === '-.' || /^-?\d*\.?\d{0,2}$/.test(val))
+                                        updateQuestion(si, qi, 'correctIntegerMax', val);
+                                    }}
+                                    className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    placeholder="Max e.g. 1.42"
+                                  />
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>

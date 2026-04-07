@@ -2,7 +2,13 @@
 import { useState, useEffect } from 'react';
 
 interface Answer { integerAnswer?: number | null; status?: string }
-interface Question { id: string; questionImage?: string | null }
+interface Question {
+  id: string;
+  questionImage?: string | null;
+  integerAnswerType?: string | null;
+  correctIntegerMin?: number | null;
+  correctIntegerMax?: number | null;
+}
 
 interface IntegerQuestionProps {
   question: Question;
@@ -13,16 +19,21 @@ interface IntegerQuestionProps {
   negativeMarks?: number;
 }
 
+// Allow: empty, '-', digits, one dot, up to 2 decimal places
+const DECIMAL_RE = /^-?\d*\.?\d{0,2}$/;
+
 export default function IntegerQuestion({ question, answer, onAnswerChange, questionNumber, marks, negativeMarks }: IntegerQuestionProps) {
   const [inputValue, setInputValue] = useState(answer?.integerAnswer?.toString() || '');
 
   useEffect(() => { setInputValue(answer?.integerAnswer?.toString() || ''); }, [question.id, answer?.integerAnswer]);
 
   const handleChange = (value: string) => {
-    if (value === '' || /^-?\d+$/.test(value)) {
+    if (value === '' || value === '-' || value === '.' || value === '-.' || DECIMAL_RE.test(value)) {
       setInputValue(value);
-      const status = value === '' ? 'NOT_ANSWERED' : (answer?.status === 'MARKED_FOR_REVIEW' ? 'MARKED_FOR_REVIEW' : 'ANSWERED');
-      onAnswerChange({ integerAnswer: value === '' ? null : parseInt(value), status });
+      const parsed = parseFloat(value);
+      const isValid = value !== '' && value !== '-' && value !== '.' && value !== '-.' && !isNaN(parsed);
+      const status = !isValid ? 'NOT_ANSWERED' : (answer?.status === 'MARKED_FOR_REVIEW' ? 'MARKED_FOR_REVIEW' : 'ANSWERED');
+      onAnswerChange({ integerAnswer: isValid ? parsed : null, status });
     }
   };
 
@@ -32,13 +43,15 @@ export default function IntegerQuestion({ question, answer, onAnswerChange, ques
     else handleChange(inputValue + val);
   };
 
+  const isRange = question.integerAnswerType === 'RANGE';
+
   return (
     <div className="max-w-4xl">
       <div className="mb-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Question {questionNumber}</h2>
           <div className="text-right text-sm">
-            <span className="text-gray-600 mr-3">Integer Type Questions</span>
+            <span className="text-gray-600 mr-3">Integer Type</span>
             <span className="text-green-700 font-semibold">+{marks ?? 4}</span>
             <span className="text-gray-400 mx-1">|</span>
             <span className="text-red-700 font-semibold">{negativeMarks ?? -1}</span>
@@ -53,9 +66,19 @@ export default function IntegerQuestion({ question, answer, onAnswerChange, ques
           <div className="mb-6 p-4 bg-gray-100 rounded text-center text-gray-500">Question image not available</div>
         )}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Enter your answer (Integer only):</label>
-          <input type="text" value={inputValue} onChange={(e) => handleChange(e.target.value)} className="w-full max-w-xs p-3 text-lg border-2 border-gray-300 rounded-md focus:border-blue-500 focus:outline-none text-center" placeholder="Enter integer" autoComplete="off" />
-          <div className="text-sm text-gray-500 mt-1">Enter a whole number (positive, negative, or zero)</div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Enter your answer:</label>
+          <input
+            type="text" inputMode="decimal" value={inputValue}
+            onChange={(e) => handleChange(e.target.value)}
+            className="w-full max-w-xs p-3 text-lg border-2 border-gray-300 rounded-md focus:border-blue-500 focus:outline-none text-center"
+            placeholder="e.g. 42 or 1.41"
+            autoComplete="off"
+          />
+          <div className="text-sm text-gray-500 mt-1">
+            {isRange
+              ? 'Enter a number (decimals up to 2 places allowed)'
+              : 'Enter a number (whole or decimal, e.g. 24 or 1.41)'}
+          </div>
         </div>
         <div className="mb-6 flex justify-center">
           <div className="virtual-keypad">
@@ -67,13 +90,19 @@ export default function IntegerQuestion({ question, answer, onAnswerChange, ques
               <div className="keypad-row">
                 <button onClick={() => handleKeypad('-')} className="keypad-key keypad-special">-</button>
                 <button onClick={() => handleKeypad('0')} className="keypad-key">0</button>
+                <button onClick={() => handleKeypad('.')} className="keypad-key keypad-special">.</button>
                 <button onClick={() => handleKeypad('Backspace')} className="keypad-key keypad-backspace">⌫</button>
               </div>
               <div className="keypad-row"><button onClick={() => handleKeypad('C')} className="keypad-key keypad-clear">Clear</button></div>
             </div>
           </div>
         </div>
-        {inputValue && <div className="p-3 bg-blue-50 border border-blue-200 rounded-md"><span className="text-sm text-blue-700">Current Answer: </span><span className="text-lg font-bold text-blue-800">{inputValue}</span></div>}
+        {inputValue && inputValue !== '-' && inputValue !== '.' && (
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <span className="text-sm text-blue-700">Current Answer: </span>
+            <span className="text-lg font-bold text-blue-800">{inputValue}</span>
+          </div>
+        )}
       </div>
     </div>
   );

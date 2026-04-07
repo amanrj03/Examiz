@@ -1,0 +1,202 @@
+"use client";
+
+import React, { FormEvent } from "react";
+
+export default function LoginPage() {
+  
+  const handleLogin = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Add login logic here
+  };
+
+  return (
+    <div className="relative flex min-h-screen w-full overflow-hidden bg-white font-sans">
+      
+      {/* --- INLINE STYLES FOR FLUID ANIMATIONS --- */}
+      <style dangerouslySetInnerHTML={{__html: `
+        /* Vertical Flow Animations */
+        @keyframes flowUp {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(-50%); }
+        }
+        @keyframes flowDown {
+          0% { transform: translateY(-50%); }
+          100% { transform: translateY(0); }
+        }
+        
+        /* Horizontal Breathing for Fluidity (Breaks the rigid track illusion) */
+        @keyframes breatheLeft {
+          0%, 100% { transform: translateX(0); }
+          50% { transform: translateX(-1.5vw) scaleX(1.05); }
+        }
+        @keyframes breatheRight {
+          0%, 100% { transform: translateX(0); }
+          50% { transform: translateX(1.5vw) scaleX(0.95); }
+        }
+
+        .animate-flow-up { animation: flowUp 20s linear infinite; }
+        .animate-flow-down { animation: flowDown 25s linear infinite; }
+        
+        .animate-breathe-left { animation: breatheLeft 8s ease-in-out infinite; }
+        .animate-breathe-right { animation: breatheRight 11s ease-in-out infinite; }
+      `}} />
+
+      {/* ========================================== */}
+      {/* BACKGROUND LAYERS & FLUID WAVES            */}
+      {/* ========================================== */}
+      
+      {/* 1. Solid Left Background */}
+      <div className="absolute left-0 top-0 z-0 hidden h-full w-[38vw] bg-[#034b3c] md:block"></div>
+
+      {/* 2. Light Green Wave (Back Layer) - FLOWING DOWN & BREATHING RIGHT */}
+      <div className="animate-breathe-right absolute top-0 z-10 hidden h-[200vh] w-[26vw] md:block" style={{ left: '35vw' }}>
+        <svg
+          className="animate-flow-down pointer-events-none h-full w-full fill-[#8ebaae]"
+          preserveAspectRatio="none"
+          viewBox="0 0 200 2000"
+        >
+          {/* Increased Wavelength: 1 full cycle takes 1000 vertical units instead of 500 */}
+          <path d="M 100,0 C 250,333 -50,666 100,1000 C 250,1333 -50,1666 100,2000 L -100,2000 L -100,0 Z" />
+        </svg>
+      </div>
+
+      {/* 3. Dark Green Wave (Front Layer) - FLOWING UP & BREATHING LEFT */}
+      <div className="animate-breathe-left absolute top-0 z-20 hidden h-[200vh] w-[26vw] md:block" style={{ left: '35vw' }}>
+        <svg
+          className="animate-flow-up pointer-events-none h-full w-full fill-[#034b3c]"
+          preserveAspectRatio="none"
+          viewBox="0 0 200 2000"
+        >
+          {/* Slightly different control points (220 and -20) so the waves cross organically */}
+          <path d="M 100,0 C 220,333 -20,666 100,1000 C 220,1333 -20,1666 100,2000 L -100,2000 L -100,0 Z" />
+        </svg>
+      </div>
+
+      {/* ========================================== */}
+      {/* FOREGROUND CONTENT WRAPPER                 */}
+      {/* ========================================== */}
+      <div className="relative z-30 flex min-h-screen w-full">
+        
+        {/* LEFT SECTION */}
+        <div className="hidden w-[40vw] flex-col justify-between p-12 text-white md:flex">
+          <div className="mt-8">
+            <div className="mb-6 flex items-center gap-2">
+              <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M70 20 C40 20 20 40 20 50 C20 60 40 80 70 80 L70 65 C50 65 35 55 35 50 C35 45 50 35 70 35 L70 20 Z" fill="white"/>
+                <rect x="75" y="42" width="16" height="16" fill="white"/>
+              </svg>
+              <div className="text-xs font-semibold leading-tight tracking-wide">
+                Open<br />Healthcare<br />Network
+              </div>
+            </div>
+            <h1 className="mb-8 text-6xl font-black tracking-wider text-white">CARE</h1>
+            <p className="max-w-[85%] text-lg font-medium leading-relaxed text-white/90">
+              Our goal is to continuously improve the quality and
+              accessibility of public healthcare services using digital
+              tools.
+            </p>
+          </div>
+
+          <div className="mb-8 max-w-[90%]">
+            <div className="mb-6 flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                  <svg width="24" height="32" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 0L24 6V26L12 32L0 26V6L12 0ZM12 4L4 8V24L12 28L20 24V8L12 4Z" fill="white"/>
+                  </svg>
+                  <div className="text-[10px] leading-tight text-white/80">Digital<br/>Public<br/>Goods</div>
+              </div>
+              <div className="h-8 w-px bg-white/30"></div>
+              <div className="flex items-center gap-2">
+                  <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M70 20 C40 20 20 40 20 50 C20 60 40 80 70 80 L70 65 C50 65 35 55 35 50 C35 45 50 35 70 35 L70 20 Z" fill="white"/>
+                    <rect x="75" y="42" width="16" height="16" fill="white"/>
+                  </svg>
+                  <div className="text-[10px] leading-tight text-white/80">Open<br/>Healthcare<br/>Network</div>
+              </div>
+            </div>
+            
+            <p className="mb-4 text-xs leading-relaxed text-white/70">
+              Open Healthcare Network is an open-source public utility designed by a multi-disciplinary team of innovators and volunteers. Open Healthcare Network CARE is a Digital Public Good recognised by the United Nations.
+            </p>
+            <div className="flex gap-2 text-xs text-[#629f8f]">
+              <a href="#" className="transition-colors hover:text-white">Contribute on Github</a>
+              <span>|</span>
+              <a href="#" className="transition-colors hover:text-white">Third Party Software Licenses</a>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT SECTION (Login Form) */}
+        <div className="flex flex-1 items-center justify-center pl-0 md:pl-[8vw]">
+          <div className="w-full max-w-md rounded-2xl border border-gray-100 bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <h2 className="mb-1 text-2xl font-bold text-gray-900">Welcome back!</h2>
+            <p className="mb-6 text-sm text-gray-500">Choose your login method to continue</p>
+
+            <div className="mb-6 flex rounded-lg bg-gray-50 p-1">
+              <button className="flex-1 rounded-md bg-white py-2 text-sm font-semibold text-gray-800 shadow-sm transition-all">
+                Log in as Staff
+              </button>
+              <button className="flex-1 py-2 text-sm font-semibold text-gray-500 transition-all hover:text-gray-700">
+                Log in as Patient
+              </button>
+            </div>
+
+            <form className="space-y-5" onSubmit={handleLogin}>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold text-gray-700">Username</label>
+                <input
+                  type="text"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm outline-none transition-all focus:border-[#034b3c] focus:ring-1 focus:ring-[#034b3c]"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold text-gray-700">Password</label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2.5 pr-10 text-sm outline-none transition-all focus:border-[#034b3c] focus:ring-1 focus:ring-[#034b3c]"
+                  />
+                  <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                      <line x1="3" y1="3" x2="21" y2="21" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-1">
+                <a href="#" className="text-xs font-medium text-gray-600 hover:text-gray-900">
+                  Forgot password?
+                </a>
+              </div>
+
+              <button
+                type="submit"
+                className="mt-2 w-full rounded-md bg-[#047857] py-3 text-sm font-semibold text-white transition-colors hover:bg-[#036046]"
+              >
+                Login
+              </button>
+            </form>
+          </div>
+
+          {/* Language Selector */}
+          <div className="absolute bottom-10 left-[60vw] right-0 text-center md:block">
+            <p className="mb-2 text-xs text-gray-500">Available in</p>
+            <div className="flex justify-center gap-3 text-sm font-medium text-[#7ca99d]">
+              <a href="#" className="text-[#034b3c] underline decoration-[#034b3c] underline-offset-4">English</a>
+              <a href="#" className="hover:text-[#034b3c]">தமிழ்</a>
+              <a href="#" className="hover:text-[#034b3c]">മലയാളം</a>
+              <a href="#" className="hover:text-[#034b3c]">मराठी</a>
+              <a href="#" className="hover:text-[#034b3c]">ಕನ್ನಡ</a>
+              <a href="#" className="hover:text-[#034b3c]">हिन्दी</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}

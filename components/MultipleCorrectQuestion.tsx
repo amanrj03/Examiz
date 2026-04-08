@@ -13,7 +13,11 @@ interface MultipleCorrectQuestionProps {
 }
 
 export default function MultipleCorrectQuestion({ question, answer, onAnswerChange, questionNumber, marks, negativeMarks }: MultipleCorrectQuestionProps) {
-  const selected = answer?.selectedOptions || [];
+  const selected: string[] = (() => {
+    if (!answer?.selectedOptions) return [];
+    if (Array.isArray(answer.selectedOptions)) return answer.selectedOptions;
+    return (answer.selectedOptions as unknown as string).split(',').map((o) => o.trim()).filter(Boolean);
+  })();
 
   const toggle = (opt: string) => {
     const next = selected.includes(opt) ? selected.filter((o) => o !== opt) : [...selected, opt];

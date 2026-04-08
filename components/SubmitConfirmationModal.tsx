@@ -29,7 +29,8 @@ export default function SubmitConfirmationModal({ isOpen, onClose, onSubmit, att
     section.questions.forEach((question) => {
       const answer = answers[question.id];
       const status = answer?.status || 'NOT_VISITED';
-      const hasAnswer = answer?.selectedOption || (answer?.integerAnswer !== null && answer?.integerAnswer !== undefined);
+      const hasAnswer = answer?.selectedOption || (answer?.integerAnswer !== null && answer?.integerAnswer !== undefined) ||
+        (answer?.selectedOptions ? (Array.isArray(answer.selectedOptions) ? answer.selectedOptions.length > 0 : (answer.selectedOptions as unknown as string).length > 0) : false);
       switch (status) {
         case 'ANSWERED': stats.answered++; break;
         case 'NOT_ANSWERED': stats.notAnswered++; break;

@@ -23,7 +23,14 @@ export default function QuestionPalette({ sections, currentSection, currentQuest
   const getStatus = (questionId: string) => answers[questionId]?.status || 'NOT_VISITED';
   const hasAnswer = (questionId: string) => {
     const a = answers[questionId];
-    return !!(a?.selectedOption || (a?.selectedOptions && a.selectedOptions.length > 0) || (a?.integerAnswer !== null && a?.integerAnswer !== undefined));
+    if (!a) return false;
+    if (a.selectedOption) return true;
+    if (a.integerAnswer !== null && a.integerAnswer !== undefined) return true;
+    if (a.selectedOptions) {
+      if (Array.isArray(a.selectedOptions)) return a.selectedOptions.length > 0;
+      return (a.selectedOptions as unknown as string).length > 0;
+    }
+    return false;
   };
 
   const getStatusClass = (status: string, isCurrent: boolean, answered: boolean) => {

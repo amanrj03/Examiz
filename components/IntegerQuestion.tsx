@@ -16,7 +16,11 @@ interface IntegerQuestionProps {
 export default function IntegerQuestion({ question, answer, onAnswerChange, questionNumber, marks, negativeMarks }: IntegerQuestionProps) {
   const [inputValue, setInputValue] = useState(answer?.integerAnswer?.toString() || '');
 
-  useEffect(() => { setInputValue(answer?.integerAnswer?.toString() || ''); }, [question.id, answer?.integerAnswer]);
+  useEffect(() => {
+    // Show as integer string — if DB returns 42.0, display as "42"
+    const val = answer?.integerAnswer;
+    setInputValue(val != null ? String(Math.round(val)) : '');
+  }, [question.id, answer?.integerAnswer]);
 
   const handleChange = (value: string) => {
     // Strictly block any decimal input — integers only

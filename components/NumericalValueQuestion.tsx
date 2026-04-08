@@ -33,7 +33,12 @@ function round2(val: string): string {
 export default function NumericalValueQuestion({ question, answer, onAnswerChange, questionNumber, marks, negativeMarks }: NumericalValueQuestionProps) {
   const [inputValue, setInputValue] = useState(answer?.integerAnswer?.toString() || '');
 
-  useEffect(() => { setInputValue(answer?.integerAnswer?.toString() || ''); }, [question.id, answer?.integerAnswer]);
+  useEffect(() => {
+    const val = answer?.integerAnswer;
+    if (val == null) { setInputValue(''); return; }
+    // Show as clean number — remove trailing zeros (e.g. 1.50 → "1.5", 42.0 → "42")
+    setInputValue(parseFloat(val.toFixed(2)).toString());
+  }, [question.id, answer?.integerAnswer]);
 
   const handleChange = (value: string) => {
     // Allow intermediate typing states, but hard-block more than 2 decimal places

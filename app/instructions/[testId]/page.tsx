@@ -146,14 +146,14 @@ export default function InstructionPage() {
                   <div key={idx} className="bg-white p-3 rounded border">
                     <h4 className="font-medium text-gray-800 mb-2">{section.name}</h4>
                     <p className="text-xs text-gray-600 mb-2">
-                      {section.questionType === 'SINGLE_CORRECT' ? 'Single Correct Type' : section.questionType === 'INTEGER' ? 'Integer Type' : section.questionType === 'MULTIPLE_CORRECT' ? 'One or More Correct Type' : 'Matrix Match Type'}
+                      {section.questionType === 'SINGLE_CORRECT' ? 'Single Correct Type' : section.questionType === 'INTEGER' ? 'Integer Type' : section.questionType === 'MULTIPLE_CORRECT' ? 'One or More Correct Type' : section.questionType === 'NUMERICAL_VALUE' ? 'Numerical Value Type' : 'Matrix Match Type'}
                     </p>
                     {section.questionType === 'MULTIPLE_CORRECT' ? (
                       <p className="text-xs text-gray-700">+4 (all correct), +3/+2/+1 (partial), 0 (unanswered), -2 (wrong)</p>
                     ) : (
                       <div className="flex gap-4 text-xs">
-                        <span className="font-bold text-green-700">+{section.questions[0]?.marks ?? 4} Correct</span>
-                        <span className="font-bold text-red-700">{section.questions[0]?.negativeMarks ?? -1} Wrong</span>
+                        <span className="font-bold text-green-700">+{section.marks ?? section.questions[0]?.marks ?? 4} Correct</span>
+                        <span className="font-bold text-red-700">{section.marks != null ? section.negativeMarks : (section.questions[0]?.negativeMarks ?? -1)} Wrong</span>
                         <span className="font-bold text-gray-700">0 Not Attempted</span>
                       </div>
                     )}

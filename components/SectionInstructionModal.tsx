@@ -14,8 +14,8 @@ export default function SectionInstructionModal({ isOpen, onClose, section }: Se
   if (!section) return null;
 
   const getInstructions = () => {
-    const marks = section.questions[0]?.marks ?? 4;
-    const neg = section.questions[0]?.negativeMarks ?? -1;
+  const marks = (section as any).marks ?? section.questions[0]?.marks ?? 4;
+  const neg = (section as any).negativeMarks ?? section.questions[0]?.negativeMarks ?? -1;
     switch (section.questionType) {
       case 'SINGLE_CORRECT': return {
         title: 'Single Correct Type Questions',
@@ -61,6 +61,15 @@ export default function SectionInstructionModal({ isOpen, onClose, section }: Se
             'Choosing any other combination will get -2 marks',
           ],
         },
+      };
+      case 'NUMERICAL_VALUE': return {
+        title: 'Numerical Value Type Questions',
+        description: 'The answer to each question is a NUMERICAL VALUE. Enter the correct value using the virtual keypad. If the value has more than two decimal places, truncate/round off to TWO decimal places. For example, if the answer is 42.00, you may enter 42.',
+        marking: [
+          { label: 'Correct Answer', marks: `+${marks}`, color: 'text-green-700' },
+          { label: 'Wrong Answer', marks: `${neg}`, color: 'text-red-700' },
+          { label: 'Not Attempted', marks: '0', color: 'text-gray-700' },
+        ],
       };
       case 'MATRIX_MATCH': return {
         title: 'Matrix Match Type Question',

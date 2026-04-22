@@ -282,7 +282,6 @@ export default function TestCreator() {
       for (let qi = 0; qi < s.questions.length; qi++) {
         const q = s.questions[qi];
         if (!q.questionImage) { setModal({ show: true, title: 'Validation Error', message: `Question ${qi + 1} in ${s.name} is missing a question image`, type: 'warning' }); return; }
-        if (!q.solutionImage) { setModal({ show: true, title: 'Validation Error', message: `Question ${qi + 1} in ${s.name} is missing a solution image`, type: 'warning' }); return; }
         if ((s.questionType === 'SINGLE_CORRECT' || s.questionType === 'MATRIX_MATCH') && !q.correctOption) { setModal({ show: true, title: 'Validation Error', message: `Question ${qi + 1} in ${s.name} is missing the correct option`, type: 'warning' }); return; }
         if (s.questionType === 'MULTIPLE_CORRECT' && (!q.correctOptions || q.correctOptions.length === 0)) { setModal({ show: true, title: 'Validation Error', message: `Question ${qi + 1} in ${s.name} is missing correct options`, type: 'warning' }); return; }
         if (s.questionType === 'INTEGER' && !q.correctInteger && q.correctInteger !== '0') { setModal({ show: true, title: 'Validation Error', message: `Question ${qi + 1} in ${s.name} is missing the correct integer answer`, type: 'warning' }); return; }

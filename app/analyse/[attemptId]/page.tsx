@@ -207,14 +207,18 @@ function QuestionCarousel({ questions, currentSection, getAnswerForQuestion }: {
             </div>
 
             {/* ── Solution image ── */}
-            {active.solutionImage && (
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Solution</p>
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Solution</p>
+              {active.solutionImage ? (
                 <div className="bg-white rounded-lg border border-gray-200 p-2">
                   <ImageWithSkeleton src={active.solutionImage} alt={`Solution ${originalIndex + 1}`} />
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="bg-white rounded-lg border border-dashed border-gray-300 p-4 text-center text-sm text-muted-foreground">
+                  No solution provided
+                </div>
+              )}
+            </div>
           </div>
         </motion.div>
       )}

@@ -120,11 +120,15 @@ export default function PreviewTest() {
                   })}
                 </div>
               )}
-              {currentQ.solutionImage && (
+              {currentQ.solutionImage ? (
                 <div className="mb-6">
                   <h3 className="text-lg font-medium mb-3">Solution:</h3>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={currentQ.solutionImage} alt={`Solution ${currentQuestion + 1}`} className="max-w-full h-auto border border-gray-300 rounded" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                </div>
+              ) : (
+                <div className="mb-6 p-4 bg-gray-50 border border-dashed border-gray-300 rounded text-center text-sm text-gray-400">
+                  No solution provided
                 </div>
               )}
             </div>
